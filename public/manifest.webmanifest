@@ -1,0 +1,17 @@
+{
+  "name": "Krono — Intervalos",
+  "short_name": "Krono",
+  "description": "Tu temporizador de intervalos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101315",
+  "theme_color": "#101315",
+  "icons": [
+    {
+      "src": "/krono-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
