@@ -20,7 +20,6 @@ const paused = ref(false)
 let timer: number | undefined
 let endsAt = 0
 let pausedRemaining = 0
-let countdownCued = false
 let motivationCued = false
 
 watch(routines, value => saveRoutines(value), { deep: true })
@@ -45,14 +44,14 @@ function saveRoutine(andStart = false) {
 function removeRoutine(routine: Routine) { if (confirm(`¿Eliminar “${routine.name}”?`)) routines.value = routines.value.filter(item => item.id !== routine.id) }
 function startRoutine(routine: Routine) { activeRoutine.value = routine; exercise.value = 1; cycle.value = 1; paused.value = false; view.value = 'session'; startPhase('countdown', 3) }
 function startPhase(nextPhase: Phase, seconds: number) {
-  window.clearInterval(timer); phase.value = nextPhase; phaseDuration.value = seconds; remaining.value = seconds; endsAt = Date.now() + seconds * 1000; countdownCued = false; motivationCued = false
+  window.clearInterval(timer); phase.value = nextPhase; phaseDuration.value = seconds; remaining.value = seconds; endsAt = Date.now() + seconds * 1000; motivationCued = false
+  if (nextPhase === 'countdown') playCue('countdown', preferences.value)
   if (nextPhase === 'exercise') { playCue('exercise', preferences.value); navigator.vibrate?.(90) }
   if (nextPhase === 'rest') playCue('rest', preferences.value)
   timer = window.setInterval(tick, 100)
 }
 function tick() {
   remaining.value = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000))
-  if (phase.value === 'countdown' && remaining.value > 0 && remaining.value <= 3 && !countdownCued) { countdownCued = true; playCue('countdown', preferences.value) }
   if (phase.value === 'exercise' && remaining.value === Math.max(2, Math.floor(phaseDuration.value / 2)) && !motivationCued) { motivationCued = true; playMotivation(preferences.value) }
   if (remaining.value <= 0) advance()
 }
@@ -63,7 +62,7 @@ function advance() {
   if (phase.value === 'rest') {
     if (exercise.value < activeRoutine.value.exerciseCount) { exercise.value++; return startPhase('countdown', 3) }
     if (cycle.value < activeRoutine.value.cycleCount) { cycle.value++; exercise.value = 1; return startPhase('countdown', 3) }
-    window.clearInterval(timer); phase.value = 'complete'; playCue('complete', preferences.value); navigator.vibrate?.([70, 70, 180])
+    window.clearInterval(timer); phase.value = 'complete'; navigator.vibrate?.([70, 70, 180])
   }
 }
 function togglePause() { if (paused.value) { paused.value = false; endsAt = Date.now() + pausedRemaining * 1000; timer = window.setInterval(tick, 100) } else { paused.value = true; pausedRemaining = remaining.value; window.clearInterval(timer) } }
@@ -92,7 +91,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
     </template>
 
     <template v-else>
-      <button class="back" @click="view = 'home'">← Volver</button><p class="eyebrow">Preferencias</p><h1 class="title">Tu experiencia.</h1><section class="settings"><div class="setting"><div><strong>Sonidos</strong><p>Señales de inicio y descanso.</p></div><input v-model="preferences.enabled" class="switch" type="checkbox" /></div><div class="setting"><div><strong>Motivación aleatoria</strong><p>Un toque de energía durante el ejercicio.</p></div><input v-model="preferences.motivationalSoundsEnabled" :disabled="!preferences.enabled" class="switch" type="checkbox" /></div><div class="setting"><div><strong>Volumen</strong><p>{{ Math.round(preferences.volume * 100) }}%</p></div><input v-model.number="preferences.volume" class="range" type="range" min="0" max="1" step="0.05" /></div><div class="setting"><div><strong>Pack activo</strong><p>Pack inicial gratuito.</p></div><span>✦</span></div><p class="notice">Los futuros packs de voces o personajes se añadirán aquí. Tus rutinas permanecen solo en este dispositivo.</p></section>
+      <button class="back" @click="view = 'home'">← Volver</button><p class="eyebrow">Preferencias</p><h1 class="title">Tu experiencia.</h1><section class="settings"><div class="setting"><div><strong>Sonidos</strong><p>Señales de inicio y descanso.</p></div><input v-model="preferences.enabled" class="switch" type="checkbox" /></div><div class="setting"><div><strong>Motivación aleatoria</strong><p>Preparada para futuros packs de sonido.</p></div><input v-model="preferences.motivationalSoundsEnabled" :disabled="!preferences.enabled" class="switch" type="checkbox" /></div><div class="setting"><div><strong>Volumen</strong><p>{{ Math.round(preferences.volume * 100) }}%</p></div><input v-model.number="preferences.volume" class="range" type="range" min="0" max="1" step="0.05" /></div><div class="setting"><div><strong>Pack activo</strong><p>{{ preferences.activeSoundPackId || 'default' }}.</p></div><span>✦</span></div><p class="notice">Los futuros packs de voces o personajes se añadirán aquí. Tus rutinas permanecen solo en este dispositivo.</p></section>
     </template>
   </main>
 </template>

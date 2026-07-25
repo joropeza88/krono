@@ -7,7 +7,7 @@ export const defaultPreferences: AudioPreferences = {
   enabled: true,
   volume: 0.55,
   motivationalSoundsEnabled: true,
-  activeSoundPackId: 'starter',
+  activeSoundPackId: 'default',
 }
 
 export function loadRoutines(): Routine[] {
@@ -19,7 +19,12 @@ export function saveRoutines(routines: Routine[]) {
 }
 
 export function loadPreferences(): AudioPreferences {
-  try { return { ...defaultPreferences, ...JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{}') } } catch { return defaultPreferences }
+  try {
+    const preferences = { ...defaultPreferences, ...JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{}') }
+    // Compatibilidad con la primera versión, que usaba un pack sintético llamado starter.
+    if (!preferences.activeSoundPackId || preferences.activeSoundPackId === 'starter') preferences.activeSoundPackId = 'default'
+    return preferences
+  } catch { return defaultPreferences }
 }
 
 export function savePreferences(preferences: AudioPreferences) {
