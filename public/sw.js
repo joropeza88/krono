@@ -1,5 +1,8 @@
-const CACHE = 'krono-v1'
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest']
+const CACHE = 'krono-v2'
+const APP_SHELL = [
+  '/', '/index.html', '/manifest.webmanifest', '/krono-icon.svg',
+  '/sounds/default/get_ready.mp3', '/sounds/default/start.mp3', '/sounds/default/rest.mp3',
+]
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_SHELL)))

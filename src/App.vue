@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { playCue, playMotivation } from './audio'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { playCue, playMotivation, preloadSoundPack, unlockAudio } from './audio'
 import { loadPreferences, loadRoutines, savePreferences, saveRoutines } from './storage'
 import type { Phase, Routine } from './types'
 
 type View = 'home' | 'form' | 'session' | 'settings'
 const routines = ref<Routine[]>(loadRoutines())
 const preferences = ref(loadPreferences())
+const isLoading = ref(true)
 const view = ref<View>('home')
 const editingId = ref<string | null>(null)
 const form = ref({ name: '', exerciseDuration: 30, restDuration: 15, exerciseCount: 4, cycleCount: 3 })
@@ -30,6 +31,11 @@ const sessionLabel = computed(() => ({ countdown: 'Prepárate', exercise: 'A ent
 const timerTitle = computed(() => phase.value === 'exercise' ? `Ejercicio ${exercise.value}` : phase.value === 'rest' ? 'Descanso' : phase.value === 'countdown' ? 'Siguiente ejercicio' : activeRoutine.value?.name || '')
 const formattedTime = computed(() => `${Math.floor(remaining.value / 60).toString().padStart(2, '0')}:${(remaining.value % 60).toString().padStart(2, '0')}`)
 
+onMounted(async () => {
+  await preloadSoundPack(preferences.value.activeSoundPackId || 'default')
+  isLoading.value = false
+})
+
 function id() { return crypto.randomUUID?.() || `${Date.now()}-${Math.random()}` }
 function newRoutine() { editingId.value = null; form.value = { name: '', exerciseDuration: 30, restDuration: 15, exerciseCount: 4, cycleCount: 3 }; view.value = 'form' }
 function editRoutine(routine: Routine) { editingId.value = routine.id; form.value = { name: routine.name, exerciseDuration: routine.exerciseDuration, restDuration: routine.restDuration, exerciseCount: routine.exerciseCount, cycleCount: routine.cycleCount }; view.value = 'form' }
@@ -42,7 +48,7 @@ function saveRoutine(andStart = false) {
   andStart ? startRoutine(routine) : view.value = 'home'
 }
 function removeRoutine(routine: Routine) { if (confirm(`¿Eliminar “${routine.name}”?`)) routines.value = routines.value.filter(item => item.id !== routine.id) }
-function startRoutine(routine: Routine) { activeRoutine.value = routine; exercise.value = 1; cycle.value = 1; paused.value = false; view.value = 'session'; startPhase('countdown', 3) }
+function startRoutine(routine: Routine) { unlockAudio(); activeRoutine.value = routine; exercise.value = 1; cycle.value = 1; paused.value = false; view.value = 'session'; startPhase('countdown', 3) }
 function startPhase(nextPhase: Phase, seconds: number) {
   window.clearInterval(timer); phase.value = nextPhase; phaseDuration.value = seconds; remaining.value = seconds; endsAt = Date.now() + seconds * 1000; motivationCued = false
   if (nextPhase === 'countdown') playCue('countdown', preferences.value)
@@ -71,7 +77,13 @@ onBeforeUnmount(() => window.clearInterval(timer))
 </script>
 
 <template>
-  <main class="app" :class="phase">
+  <main v-if="isLoading" class="app session">
+    <div class="session-state">Preparando Krono</div>
+    <h1 class="session-title">Cargando sonidos</h1>
+    <div class="timer-wrap" style="--progress: 68%"><div class="timer"><strong>···</strong><span>un momento</span></div></div>
+    <p class="session-meta">Estamos dejando todo listo para tu entrenamiento.</p>
+  </main>
+  <main v-else class="app" :class="phase">
     <template v-if="view === 'home'">
       <header class="top"><div class="brand">kron<i>o</i></div><button class="icon-button" aria-label="Ajustes" @click="view = 'settings'">⚙</button></header>
       <p class="eyebrow">Tu ritmo, tus reglas</p><h1 class="title">Entrena por<br>intervalos.</h1>
