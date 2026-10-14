@@ -49,8 +49,8 @@ function saveRoutine(andStart = false) {
 }
 function removeRoutine(routine: Routine) { if (confirm(`¿Eliminar “${routine.name}”?`)) routines.value = routines.value.filter(item => item.id !== routine.id) }
 function startRoutine(routine: Routine) { unlockAudio(); activeRoutine.value = routine; exercise.value = 1; cycle.value = 1; paused.value = false; view.value = 'session'; startPhase('countdown', 3) }
-function startPhase(nextPhase: Phase, seconds: number) {
-  window.clearInterval(timer); phase.value = nextPhase; phaseDuration.value = seconds; remaining.value = seconds; endsAt = Date.now() + seconds * 1000; motivationCued = false
+function startPhase(nextPhase: Phase, seconds: number, deadline = Date.now() + seconds * 1000) {
+  window.clearInterval(timer); phase.value = nextPhase; phaseDuration.value = seconds; endsAt = deadline; remaining.value = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)); motivationCued = false
   if (nextPhase === 'countdown') playCue('countdown', preferences.value)
   if (nextPhase === 'exercise') { playCue('exercise', preferences.value); navigator.vibrate?.(90) }
   if (nextPhase === 'rest') playCue('rest', preferences.value)
@@ -58,6 +58,10 @@ function startPhase(nextPhase: Phase, seconds: number) {
 }
 function tick() {
   remaining.value = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000))
+  if (phase.value === 'rest' && remaining.value <= 3 && activeRoutine.value) {
+    if (exercise.value < activeRoutine.value.exerciseCount) { exercise.value++; return startPhase('countdown', 3, endsAt) }
+    if (cycle.value < activeRoutine.value.cycleCount) { cycle.value++; exercise.value = 1; return startPhase('countdown', 3, endsAt) }
+  }
   if (phase.value === 'exercise' && remaining.value === Math.max(2, Math.floor(phaseDuration.value / 2)) && !motivationCued) { motivationCued = true; playMotivation(preferences.value) }
   if (remaining.value <= 0) advance()
 }
