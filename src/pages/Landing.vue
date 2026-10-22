@@ -3,14 +3,58 @@ import { IonIcon } from "@ionic/vue";
 import { logoAndroid, logoApple } from "ionicons/icons";
 import { onBeforeUnmount, onMounted } from "vue";
 
+let scrollAnimationFrame: number | undefined;
+
+function scrollToSection(section: HTMLElement) {
+  if (scrollAnimationFrame) cancelAnimationFrame(scrollAnimationFrame);
+
+  const scrollRoot = document.scrollingElement ?? document.documentElement;
+  const start = scrollRoot.scrollTop || window.scrollY || document.body.scrollTop;
+  const target = section.getBoundingClientRect().top + start;
+  const distance = target - start;
+  const duration = Math.min(700, Math.max(300, Math.abs(distance) * 0.35));
+  const startedAt = performance.now();
+
+  function animate(now: number) {
+    const progress = Math.min((now - startedAt) / duration, 1);
+    const easedProgress = 1 - Math.pow(1 - progress, 4);
+    const position = start + distance * easedProgress;
+
+    scrollRoot.scrollTop = position;
+    document.body.scrollTop = position;
+
+    if (progress < 1) scrollAnimationFrame = requestAnimationFrame(animate);
+  }
+
+  scrollAnimationFrame = requestAnimationFrame(animate);
+}
+
+function handleAnchorClick(event: MouseEvent) {
+  const source = event.target;
+  if (!(source instanceof Element)) return;
+
+  const anchor = source.closest<HTMLAnchorElement>('a[href^="#"]');
+  if (!anchor?.hash) return;
+
+  const section = document.getElementById(anchor.hash.slice(1));
+  if (!section) return;
+
+  event.preventDefault();
+  window.history.pushState(null, "", anchor.hash);
+  scrollToSection(section);
+}
+
 onMounted(() => {
   document.documentElement.classList.add("landing-mode");
   document.body.classList.add("landing-mode");
+  document.addEventListener("click", handleAnchorClick);
 });
 
 onBeforeUnmount(() => {
+  if (scrollAnimationFrame) cancelAnimationFrame(scrollAnimationFrame);
   document.documentElement.classList.remove("landing-mode");
   document.body.classList.remove("landing-mode");
+  document.removeEventListener("click", handleAnchorClick);
 });
 </script>
 

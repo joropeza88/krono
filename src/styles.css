@@ -20,12 +20,23 @@ html.landing-mode,
 body.landing-mode {
   height: auto;
   overflow-y: auto;
+  scroll-behavior: smooth;
 }
 html.landing-mode {
-  scroll-behavior: smooth;
+  min-height: 100%;
+}
+body.landing-mode {
+  position: static;
+  max-height: none;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  touch-action: auto;
+  overscroll-behavior-y: auto;
+  transform: none;
 }
 body.landing-mode #app {
   height: auto;
+  min-height: 100dvh;
 }
 button,
 input {
@@ -663,20 +674,15 @@ button {
 .routine-delete-alert {
   --background: #1a2020;
   --backdrop-opacity: 0.55;
-  --color: #f6f7f2;
-}
-.routine-delete-alert .alert-title,
-.routine-delete-alert .alert-message {
-  color: #f6f7f2;
-}
-.routine-delete-alert .alert-message {
-  color: #aebcb4;
-}
-.routine-delete-alert .alert-button-role-destructive {
-  color: #f17d75;
-}
-.routine-delete-alert .alert-button-role-cancel {
-  color: #b6f36c;
+  --ion-background-color: #1a2020;
+  --ion-background-color-rgb: 26, 32, 32;
+  --ion-color-danger: #f17d75;
+  --ion-color-danger-rgb: 241, 125, 117;
+  --ion-color-primary: #b6f36c;
+  --ion-color-primary-rgb: 182, 243, 108;
+  --ion-color-step-550: #aebcb4;
+  --ion-text-color: #f6f7f2;
+  --ion-text-color-rgb: 246, 247, 242;
 }
 .app-header ion-toolbar {
   --background: rgba(16, 19, 21, 0.78);
@@ -1093,7 +1099,8 @@ ion-modal::part(content) {
 }
 .timer-wrap {
   width: min(74vw, 330px);
-  aspect-ratio: 1;
+  height: min(74vw, 330px);
+  flex: 0 0 auto;
   margin: clamp(18px, 5vh, 42px) auto;
   padding: 13px;
   border-radius: 50%;

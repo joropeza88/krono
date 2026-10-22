@@ -122,6 +122,7 @@ async function startRoutine(routine: Routine) {
         <SettingsSheet :open="isSettingsOpen" @close="isSettingsOpen = false" />
         <IonAlert
           :is-open="Boolean(routinePendingDeletion)"
+          class="routine-delete-alert"
           css-class="routine-delete-alert"
           header="¿Eliminar rutina?"
           :message="`“${routinePendingDeletion?.name ?? ''}” se eliminará permanentemente.`"
