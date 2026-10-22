@@ -4,7 +4,7 @@ const emit = defineEmits<{ close: [] }>();
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport to="ion-app">
     <ion-modal
       :is-open="open"
       mode="ios"
