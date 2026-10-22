@@ -20,7 +20,6 @@ html.landing-mode,
 body.landing-mode {
   height: auto;
   overflow-y: auto;
-  scroll-behavior: smooth;
 }
 html.landing-mode {
   min-height: 100%;
@@ -676,6 +675,7 @@ button {
   --backdrop-opacity: 0.55;
   --ion-background-color: #1a2020;
   --ion-background-color-rgb: 26, 32, 32;
+  --ion-overlay-background-color: #1a2020;
   --ion-color-danger: #f17d75;
   --ion-color-danger-rgb: 241, 125, 117;
   --ion-color-primary: #b6f36c;
