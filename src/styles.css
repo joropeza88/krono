@@ -660,8 +660,26 @@ button {
   --background: #101315;
   --color: #f6f7f2;
 }
+.routine-delete-alert {
+  --background: #1a2020;
+  --backdrop-opacity: 0.55;
+  --color: #f6f7f2;
+}
+.routine-delete-alert .alert-title,
+.routine-delete-alert .alert-message {
+  color: #f6f7f2;
+}
+.routine-delete-alert .alert-message {
+  color: #aebcb4;
+}
+.routine-delete-alert .alert-button-role-destructive {
+  color: #f17d75;
+}
+.routine-delete-alert .alert-button-role-cancel {
+  color: #b6f36c;
+}
 .app-header ion-toolbar {
-  --background: #101315;
+  --background: rgba(16, 19, 21, 0.78);
   --border-width: 0;
   --min-height: 0;
 }
@@ -672,10 +690,17 @@ button {
   padding: 6px 20px;
 }
 .session-header ion-toolbar {
-  --background: #101315;
+  --background: rgba(16, 19, 21, 0.78);
   --border-width: 0;
   --min-height: 56px;
   --color: #b6f36c;
+}
+.app-header ion-toolbar::part(background),
+.session-header ion-toolbar::part(background) {
+  border-bottom: 1px solid rgba(182, 243, 108, 0.08);
+  background: rgba(16, 19, 21, 0.78);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
 }
 .session-header ion-back-button {
   --color: #b6f36c;
@@ -685,7 +710,8 @@ button {
   width: min(100%, 500px);
   margin: auto;
   min-height: 100dvh;
-  padding: max(24px, env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
+  padding: max(80px, calc(80px + env(safe-area-inset-top))) 20px
+    calc(28px + env(safe-area-inset-bottom));
   background: radial-gradient(circle at 0% 50%, #203b34 0, transparent 48%), #101315;
 }
 .app:has(.tabbar) {
@@ -728,10 +754,11 @@ button {
   padding: 6px;
   border: 1px solid #35403e;
   border-radius: 20px;
-  background: rgba(28, 33, 34, 0.94);
+  background: rgba(28, 33, 34, 0.78);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
   transform: translateX(-50%);
-  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
 }
 .tabbar button {
   display: grid;
@@ -775,9 +802,26 @@ button {
   background: #b6f36c;
   color: #101315;
 }
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .app-header ion-toolbar,
+  .session-header ion-toolbar {
+    --background: #101315;
+  }
+  .app-header ion-toolbar::part(background),
+  .session-header ion-toolbar::part(background),
+  .tabbar {
+    background: #101315;
+  }
+}
 .app-sheet-content {
   --background: #101315;
   --color: #f6f7f2;
+}
+.app-sheet-header ion-toolbar {
+  --background: #101315;
+  --border-width: 0;
+  --color: #f6f7f2;
+  --min-height: 0;
 }
 ion-modal {
   --background: #101315;
@@ -795,6 +839,7 @@ ion-modal::part(content) {
 }
 .sheet-header h2 {
   margin: 0;
+  color: #f6f7f2;
   font-size: 19px;
   letter-spacing: -0.03em;
 }
@@ -1032,7 +1077,7 @@ ion-modal::part(content) {
 }
 .session-content .app {
   min-height: 100%;
-  padding-top: 16px;
+  padding-top: max(72px, calc(72px + env(safe-area-inset-top)));
 }
 .session-state {
   color: #b6f36c;
@@ -1092,6 +1137,11 @@ ion-modal::part(content) {
   color: #101315;
 }
 .session-controls .pause-session {
+  border: 1px solid rgba(182, 243, 108, 0.26);
+  background: rgba(182, 243, 108, 0.14);
+  color: #caff8e;
+}
+.save-routine {
   border: 1px solid rgba(182, 243, 108, 0.26);
   background: rgba(182, 243, 108, 0.14);
   color: #caff8e;

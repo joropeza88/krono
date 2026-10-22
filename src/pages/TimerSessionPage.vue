@@ -37,14 +37,14 @@ onIonViewWillLeave(() => {
 
 <template>
   <IonPage class="simple-timer-session">
-    <IonHeader class="session-header">
+    <IonHeader class="session-header" translucent>
       <IonToolbar>
         <IonButtons slot="start">
           <IonBackButton default-href="/cronometro" text="" />
         </IonButtons>
       </IonToolbar>
     </IonHeader>
-    <IonContent class="app-content session-content">
+    <IonContent class="app-content session-content" fullscreen>
       <main class="app session">
         <section class="session">
           <div class="session-state">

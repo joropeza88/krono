@@ -84,7 +84,7 @@ onIonViewWillLeave(() => {
 
 <template>
   <IonPage :class="[phase, { 'preparing-next-exercise': isPreparingNextExercise }]">
-    <IonHeader class="session-header">
+    <IonHeader class="session-header" translucent>
       <IonToolbar>
         <IonButtons slot="start">
           <IonBackButton default-href="/rutinas" text="" />
@@ -92,7 +92,7 @@ onIonViewWillLeave(() => {
         <IonTitle>{{ activeRoutine?.name }}</IonTitle>
       </IonToolbar>
     </IonHeader>
-    <IonContent class="app-content session-content">
+    <IonContent class="app-content session-content" fullscreen>
       <main class="app session">
         <section class="session">
           <div class="session-state">{{ label }}</div>

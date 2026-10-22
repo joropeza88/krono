@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { IonContent, IonHeader, IonPage, IonToolbar, useIonRouter } from "@ionic/vue";
+import { IonAlert, IonContent, IonHeader, IonPage, IonToolbar, useIonRouter } from "@ionic/vue";
 import AppTabBar from "../components/AppTabBar.vue";
 import RoutineFormSheet from "../components/RoutineFormSheet.vue";
 import SettingsSheet from "../components/SettingsSheet.vue";
@@ -14,6 +14,7 @@ const routineSession = useRoutineSessionStore();
 const isFormOpen = ref(false);
 const isSettingsOpen = ref(false);
 const editingRoutine = ref<Routine | null>(null);
+const routinePendingDeletion = ref<Routine | null>(null);
 
 function openNewRoutine() {
   editingRoutine.value = null;
@@ -44,7 +45,17 @@ async function saveRoutine(
 }
 
 function removeRoutine(routine: Routine) {
-  if (confirm(`¿Eliminar “${routine.name}”?`)) remove(routine.id);
+  routinePendingDeletion.value = routine;
+}
+
+function cancelRoutineDeletion() {
+  routinePendingDeletion.value = null;
+}
+
+function confirmRoutineDeletion() {
+  const routine = routinePendingDeletion.value;
+  if (routine) remove(routine.id);
+  routinePendingDeletion.value = null;
 }
 
 async function startRoutine(routine: Routine) {
@@ -55,7 +66,7 @@ async function startRoutine(routine: Routine) {
 
 <template>
   <IonPage>
-    <IonHeader class="app-header">
+    <IonHeader class="app-header" translucent>
       <IonToolbar>
         <header class="top app-top">
           <div class="brand">kron<i>o</i></div>
@@ -65,7 +76,7 @@ async function startRoutine(routine: Routine) {
         </header>
       </IonToolbar>
     </IonHeader>
-    <IonContent class="app-content">
+    <IonContent class="app-content" fullscreen>
       <main class="app">
         <p class="eyebrow">Tu ritmo, tus reglas</p>
         <h1 class="title">Entrena por<br />intervalos.</h1>
@@ -83,7 +94,7 @@ async function startRoutine(routine: Routine) {
             <div>
               <h3>{{ routine.name }}</h3>
               <p>
-                {{ routine.exerciseCount }} ejercicios · {{ routine.cycleCount }} ciclos ·
+                {{ routine.exerciseCount }} ejercicios · {{ routine.cycleCount }} rondas ·
                 {{ routine.exerciseDuration }}s / {{ routine.restDuration }}s
               </p>
               <div class="routine-actions">
@@ -109,6 +120,17 @@ async function startRoutine(routine: Routine) {
           @save="saveRoutine"
         />
         <SettingsSheet :open="isSettingsOpen" @close="isSettingsOpen = false" />
+        <IonAlert
+          :is-open="Boolean(routinePendingDeletion)"
+          css-class="routine-delete-alert"
+          header="¿Eliminar rutina?"
+          :message="`“${routinePendingDeletion?.name ?? ''}” se eliminará permanentemente.`"
+          :buttons="[
+            { text: 'Cancelar', role: 'cancel', handler: cancelRoutineDeletion },
+            { text: 'Eliminar', role: 'destructive', handler: confirmRoutineDeletion },
+          ]"
+          @did-dismiss="cancelRoutineDeletion"
+        />
         <AppTabBar />
       </main>
     </IonContent>

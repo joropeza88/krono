@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IonContent, IonModal } from "@ionic/vue";
+import { IonContent, IonHeader, IonModal, IonToolbar } from "@ionic/vue";
 
 defineProps<{ open: boolean; title: string }>();
 const emit = defineEmits<{ close: [] }>();
@@ -17,11 +17,15 @@ const emit = defineEmits<{ close: [] }>();
       :expand-to-scroll="false"
       @didDismiss="emit('close')"
     >
+      <IonHeader class="app-sheet-header">
+        <IonToolbar>
+          <header class="sheet-header">
+            <h2>{{ title }}</h2>
+            <button class="sheet-close" aria-label="Cerrar" @click="emit('close')">×</button>
+          </header>
+        </IonToolbar>
+      </IonHeader>
       <IonContent class="app-sheet-content">
-        <header class="sheet-header">
-          <h2>{{ title }}</h2>
-          <button class="sheet-close" aria-label="Cerrar" @click="emit('close')">×</button>
-        </header>
         <div class="sheet-body"><slot /></div>
       </IonContent>
     </IonModal>

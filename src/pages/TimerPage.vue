@@ -18,7 +18,7 @@ async function startTimer() {
 
 <template>
   <IonPage>
-    <IonHeader class="app-header">
+    <IonHeader class="app-header" translucent>
       <IonToolbar>
         <header class="top app-top">
           <div class="brand">kron<i>o</i></div>
@@ -28,7 +28,7 @@ async function startTimer() {
         </header>
       </IonToolbar>
     </IonHeader>
-    <IonContent class="app-content">
+    <IonContent class="app-content" fullscreen>
       <main class="app">
         <p class="eyebrow">Tiempo a tu manera</p>
         <h1 class="title">Cronómetro.</h1>

@@ -126,8 +126,8 @@ function submit(andStart: boolean) {
         </div>
       </div>
       <div class="form-actions">
-        <button class="primary wide" type="submit">Guardar rutina</button>
-        <button class="secondary wide" type="button" @click="submit(true)">
+        <button class="secondary wide" type="submit">Guardar rutina</button>
+        <button class="primary wide save-routine" type="button" @click="submit(true)">
           Guardar y empezar
         </button>
       </div>
