@@ -34,7 +34,15 @@ watch(
 );
 
 function submit(andStart: boolean) {
-  if (!form.value.name.trim()) return;
+  const { exerciseDuration, restDuration, exerciseCount, cycleCount } = form.value;
+  if (
+    !form.value.name.trim() ||
+    exerciseDuration < 1 ||
+    restDuration < 0 ||
+    exerciseCount < 1 ||
+    cycleCount < 1
+  )
+    return;
   emit("save", { ...form.value, name: form.value.name.trim() }, andStart);
 }
 </script>
@@ -51,15 +59,16 @@ function submit(andStart: boolean) {
         <div class="routine-setting-group">
           <label class="setting routine-setting">
             <div>
-              <strong>Ejercicio</strong>
+              <strong>Tabajo</strong>
               <p>Duración de cada bloque.</p>
               <output>{{ form.exerciseDuration }} s</output>
             </div>
             <input
               v-model.number="form.exerciseDuration"
               class="range"
-              min="1"
-              max="600"
+              min="5"
+              max="120"
+              step="5"
               type="range"
             />
           </label>
@@ -74,8 +83,9 @@ function submit(andStart: boolean) {
             <input
               v-model.number="form.restDuration"
               class="range"
-              min="1"
-              max="600"
+              min="0"
+              max="90"
+              step="5"
               type="range"
             />
           </label>
@@ -84,14 +94,15 @@ function submit(andStart: boolean) {
           <label class="setting routine-setting">
             <div>
               <strong>Ejercicios</strong>
-              <p>Bloques por ciclo.</p>
+              <p>Bloques por ronda.</p>
               <output>{{ form.exerciseCount }}</output>
             </div>
             <input
               v-model.number="form.exerciseCount"
               class="range"
               min="1"
-              max="30"
+              max="15"
+              step="1"
               type="range"
             />
           </label>
@@ -99,11 +110,18 @@ function submit(andStart: boolean) {
         <div class="routine-setting-group">
           <label class="setting routine-setting">
             <div>
-              <strong>Ciclos</strong>
+              <strong>Rondas</strong>
               <p>Veces que repetirás la rutina.</p>
               <output>{{ form.cycleCount }}</output>
             </div>
-            <input v-model.number="form.cycleCount" class="range" min="1" max="30" type="range" />
+            <input
+              v-model.number="form.cycleCount"
+              class="range"
+              min="1"
+              max="10"
+              step="1"
+              type="range"
+            />
           </label>
         </div>
       </div>

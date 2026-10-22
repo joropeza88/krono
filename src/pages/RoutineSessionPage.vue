@@ -15,27 +15,48 @@ import { useRoutineSessionStore } from "../stores/useRoutineSessionStore";
 
 const ionRouter = useIonRouter();
 const session = useRoutineSessionStore();
-const { activeRoutine, phase, remaining, exercise, cycle, paused, progress } = session;
-const label = computed(
-  () =>
-    ({
-      countdown: "Prepárate",
-      exercise: "A entrenar",
-      rest: "Recupera",
-      complete: "¡Completado!",
-      ready: "",
-    })[phase.value],
+const {
+  activeRoutine,
+  phase,
+  remaining,
+  exercise,
+  cycle,
+  paused,
+  progress,
+  isPreparingNextExercise,
+} = session;
+const label = computed(() =>
+  isPreparingNextExercise.value
+    ? "Prepárate"
+    : {
+        countdown: "Prepárate",
+        exercise: "A entrenar",
+        rest: "Recupera",
+        complete: "¡Completado!",
+        ready: "",
+      }[phase.value],
 );
 const title = computed(() =>
   phase.value === "ready"
     ? "Comencemos"
+    : isPreparingNextExercise.value
+      ? "Siguiente ejercicio"
+      : phase.value === "exercise"
+        ? `Ejercicio ${exercise.value}`
+        : phase.value === "rest"
+          ? "Descanso"
+          : phase.value === "countdown"
+            ? "Siguiente ejercicio"
+            : activeRoutine.value?.name || "",
+);
+const timerHint = computed(() =>
+  isPreparingNextExercise.value
+    ? "empieza en breve"
     : phase.value === "exercise"
-      ? `Ejercicio ${exercise.value}`
+      ? "mantén el ritmo"
       : phase.value === "rest"
-        ? "Descanso"
-        : phase.value === "countdown"
-          ? "Siguiente ejercicio"
-          : activeRoutine.value?.name || "",
+        ? "respira"
+        : "empieza en breve",
 );
 const formattedTime = computed(
   () =>
@@ -62,7 +83,7 @@ onIonViewWillLeave(() => {
 </script>
 
 <template>
-  <IonPage :class="phase">
+  <IonPage :class="[phase, { 'preparing-next-exercise': isPreparingNextExercise }]">
     <IonHeader class="session-header">
       <IonToolbar>
         <IonButtons slot="start">
@@ -79,13 +100,7 @@ onIonViewWillLeave(() => {
           <div class="timer-wrap" :style="{ '--progress': `${progress}%` }">
             <div class="timer">
               <strong>{{ formattedTime }}</strong
-              ><span v-if="phase !== 'complete'">{{
-                phase === "exercise"
-                  ? "mantén el ritmo"
-                  : phase === "rest"
-                    ? "respira"
-                    : "empieza en breve"
-              }}</span>
+              ><span v-if="phase !== 'complete'">{{ timerHint }}</span>
             </div>
           </div>
           <p v-if="phase === 'ready'" class="session-meta">Todo listo. Tú marcas el comienzo.</p>

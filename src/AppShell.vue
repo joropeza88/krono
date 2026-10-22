@@ -6,10 +6,13 @@ import { releaseScreenWakeLock, requestScreenWakeLock } from "./services/wakeLoc
 import { usePreferencesStore } from "./stores/usePreferencesStore";
 import { useRoutineSessionStore } from "./stores/useRoutineSessionStore";
 import { useTimerSessionStore } from "./stores/useTimerSessionStore";
+import Landing from "./pages/Landing.vue";
+import { useAppEnvironment } from "./services/appEnvironment";
 
 const { preferences } = usePreferencesStore();
 const { isActive: isRoutineActive } = useRoutineSessionStore();
 const { isActive: isTimerActive } = useTimerSessionStore();
+const { shouldShowApp } = useAppEnvironment();
 
 function handleVisibilityChange() {
   if (document.visibilityState === "visible" && (isRoutineActive.value || isTimerActive.value)) {
@@ -32,5 +35,6 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <IonApp><IonRouterOutlet :animated="true" mode="ios" /></IonApp>
+  <IonApp v-if="shouldShowApp"><IonRouterOutlet :animated="true" mode="ios" /></IonApp>
+  <Landing v-else />
 </template>

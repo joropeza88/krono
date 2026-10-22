@@ -31,10 +31,9 @@ async function startTimer() {
     <IonContent class="app-content">
       <main class="app">
         <p class="eyebrow">Tiempo a tu manera</p>
-        <h1 class="title">Cronómetro<br />simple.</h1>
+        <h1 class="title">Cronómetro.</h1>
         <section class="hero timer-hero">
           <h2>¿Cuánto tiempo?</h2>
-          <p>Sin ciclos ni descansos. Solo empieza y sigue tu ritmo.</p>
           <label class="timer-duration"
             >Minutos<input
               v-model.number="minutes"
@@ -43,7 +42,7 @@ async function startTimer() {
               type="number"
               inputmode="numeric"
           /></label>
-          <button class="primary" @click="startTimer">Iniciar cronómetro</button>
+          <button class="primary" @click="startTimer">Preparar cronómetro</button>
         </section>
         <SettingsSheet :open="isSettingsOpen" @close="isSettingsOpen = false" />
         <AppTabBar />

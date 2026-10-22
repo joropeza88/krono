@@ -13,6 +13,7 @@ const phaseDuration = ref(0);
 const exercise = ref(1);
 const cycle = ref(1);
 const paused = ref(false);
+const isPreparingNextExercise = ref(false);
 let pausedRemaining = 0;
 let motivationCued = false;
 
@@ -35,6 +36,7 @@ async function updateWakeLock() {
 
 function startPhase(nextPhase: Phase, seconds: number, deadline = Date.now() + seconds * 1000) {
   phase.value = nextPhase;
+  isPreparingNextExercise.value = false;
   motivationCued = false;
   if (nextPhase === "countdown") void playCue("countdown", preferences.value);
   if (nextPhase === "exercise") {
@@ -49,15 +51,18 @@ const countdown = createCountdownTimer(({ remaining: nextRemaining, duration }) 
   remaining.value = nextRemaining;
   phaseDuration.value = duration;
   const routine = activeRoutine.value;
-  if (phase.value === "rest" && remaining.value <= 3 && routine) {
+  if (phase.value === "rest" && remaining.value <= 3 && routine && !isPreparingNextExercise.value) {
+    isPreparingNextExercise.value = true;
     if (exercise.value < routine.exerciseCount) {
       exercise.value++;
-      return startPhase("countdown", 3, countdown.deadline);
+      void playCue("countdown", preferences.value);
+      return;
     }
     if (cycle.value < routine.cycleCount) {
       cycle.value++;
       exercise.value = 1;
-      return startPhase("countdown", 3, countdown.deadline);
+      void playCue("countdown", preferences.value);
+      return;
     }
   }
   if (
@@ -77,20 +82,30 @@ function advance() {
   if (phase.value === "exercise") {
     if (exercise.value === routine.exerciseCount && cycle.value === routine.cycleCount)
       return complete();
+    if (routine.restDuration <= 0) return startNextExercise(false);
     return startPhase("rest", routine.restDuration);
   }
   if (phase.value === "rest") {
-    if (exercise.value < routine.exerciseCount) {
-      exercise.value++;
-      return startPhase("countdown", 3);
-    }
-    if (cycle.value < routine.cycleCount) {
-      cycle.value++;
-      exercise.value = 1;
-      return startPhase("countdown", 3);
-    }
-    complete();
+    if (isPreparingNextExercise.value) return startPhase("exercise", routine.exerciseDuration);
+    startNextExercise(true);
   }
+}
+
+function startNextExercise(withCountdown: boolean) {
+  const routine = activeRoutine.value;
+  if (!routine) return;
+
+  if (exercise.value < routine.exerciseCount) {
+    exercise.value++;
+  } else if (cycle.value < routine.cycleCount) {
+    cycle.value++;
+    exercise.value = 1;
+  } else {
+    return complete();
+  }
+
+  if (withCountdown) return startPhase("countdown", 3);
+  startPhase("exercise", routine.exerciseDuration);
 }
 
 async function start(routine: Routine) {
@@ -109,6 +124,7 @@ function prepare(routine: Routine) {
   exercise.value = 1;
   cycle.value = 1;
   paused.value = false;
+  isPreparingNextExercise.value = false;
   pausedRemaining = 0;
 }
 
@@ -116,7 +132,7 @@ async function togglePause() {
   if (paused.value) {
     await unlockAudio();
     paused.value = false;
-    countdown.start(pausedRemaining);
+    countdown.start(phaseDuration.value || pausedRemaining, Date.now() + pausedRemaining * 1000);
     await updateWakeLock();
   } else {
     paused.value = true;
@@ -138,6 +154,7 @@ function finish() {
   activeRoutine.value = null;
   phase.value = "ready";
   paused.value = false;
+  isPreparingNextExercise.value = false;
   void updateWakeLock();
 }
 
@@ -149,6 +166,7 @@ export function useRoutineSessionStore() {
     exercise,
     cycle,
     paused,
+    isPreparingNextExercise,
     progress,
     isActive,
     prepare,
