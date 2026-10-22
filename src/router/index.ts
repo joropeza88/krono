@@ -5,7 +5,7 @@ import TimerPage from "../pages/TimerPage.vue";
 import TimerSessionPage from "../pages/TimerSessionPage.vue";
 
 export const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory("/"),
   routes: [
     { path: "/", redirect: "/rutinas" },
     { path: "/rutinas", name: "routines", component: RoutinesPage },

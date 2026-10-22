@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { IonContent, IonModal } from "@ionic/vue";
+
 defineProps<{ open: boolean; title: string }>();
 const emit = defineEmits<{ close: [] }>();
 </script>
 
 <template>
   <Teleport to="ion-app">
-    <ion-modal
+    <IonModal
       :is-open="open"
       mode="ios"
       :breakpoints="[0, 0.94]"
@@ -15,13 +17,13 @@ const emit = defineEmits<{ close: [] }>();
       :expand-to-scroll="false"
       @didDismiss="emit('close')"
     >
-      <ion-content class="app-sheet-content">
+      <IonContent class="app-sheet-content">
         <header class="sheet-header">
           <h2>{{ title }}</h2>
           <button class="sheet-close" aria-label="Cerrar" @click="emit('close')">×</button>
         </header>
         <div class="sheet-body"><slot /></div>
-      </ion-content>
-    </ion-modal>
+      </IonContent>
+    </IonModal>
   </Teleport>
 </template>
