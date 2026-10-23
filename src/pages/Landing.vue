@@ -123,6 +123,12 @@ onBeforeUnmount(() => {
 
     <section class="landing-section landing-benefits">
       <div class="landing-section-intro">
+        <!-- Imagen ideal: una persona entrenando en interior, en un momento de concentración y con luz tenue.
+             Deja aire oscuro en la parte superior para que el titular siga siendo fácil de leer.
+             bg_1.jpg es el formato vertical para este espacio. -->
+        <div class="landing-section-visual landing-benefits-visual" aria-hidden="true">
+          <img src="/bg_1.jpg" alt="" />
+        </div>
         <p class="landing-kicker"><span></span> Entrenar, simplificado</p>
         <h2>Todo lo que necesitas.<br /><em>Nada que distraiga.</em></h2>
       </div>
@@ -174,13 +180,32 @@ onBeforeUnmount(() => {
           </div>
         </li>
       </ol>
+      <!-- Imagen ideal: una persona mirando o iniciando Krono desde su móvil antes de entrenar.
+           Busca una composición vertical, con el sujeto desplazado a un lado y sin texto dentro de la foto.
+           bg_2.jpg es el formato vertical para este espacio. -->
+      <div class="landing-section-visual landing-flow-visual" aria-hidden="true">
+        <img src="/bg_2.jpg" alt="" />
+      </div>
+    </section>
+
+    <!-- Imagen ideal: escena horizontal amplia de una persona entrenando con el móvil cerca o visible.
+         La imagen debe tolerar un recorte central en móvil y tener tonos oscuros para convivir con la malla.
+         bg_3.jpg es el formato panorámico para este espacio. -->
+    <section class="landing-training-banner" aria-label="Instala Krono en tu móvil">
+      <img src="/bg_3.jpg" alt="" />
+      <div class="landing-training-copy">
+        <h2>Tu próxima sesión<br />empieza aquí.</h2>
+        <p>Instala Krono en tu móvil y tenla siempre lista.</p>
+      </div>
     </section>
 
     <section id="instalar" class="landing-install">
       <div class="landing-install-intro">
         <p class="landing-kicker"><span></span> Llévala contigo</p>
-        <h2>Instala Krono<br />en tu inicio.</h2>
-        <p>Úsala como una app: pantalla completa, siempre lista para tu próxima sesión.</p>
+        <h2>Instala Krono<br />desde tu móvil.</h2>
+        <p>
+          Abre esta página desde tu iPhone, iPad o Android para instalarla en tu pantalla de inicio y usarla como una app.
+        </p>
       </div>
       <div class="landing-install-grid">
         <article class="landing-install-card">
