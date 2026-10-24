@@ -1270,6 +1270,9 @@ ion-modal::part(content) {
 .session-side-rail {
   display: none;
 }
+main.app.session > .session {
+  justify-content: center;
+}
 .session-content .app {
   min-height: 100%;
   padding-top: max(72px, calc(72px + env(safe-area-inset-top)));
@@ -1463,6 +1466,7 @@ ion-modal::part(content) {
     margin: auto;
     grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
     align-items: center;
+    align-content: center;
     gap: clamp(30px, 6vw, 74px);
     text-align: left;
   }

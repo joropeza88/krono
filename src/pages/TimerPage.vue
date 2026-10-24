@@ -23,7 +23,7 @@ async function startTimer() {
         <header class="top app-top">
           <div class="brand">kron<i>o</i></div>
           <button class="icon-button settings-button" aria-label="Ajustes" @click="isSettingsOpen = true">
-            ⚙
+            ⚙︎
           </button>
         </header>
       </IonToolbar>

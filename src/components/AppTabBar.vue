@@ -23,7 +23,7 @@ function selectTab(path: "/rutinas" | "/cronometro") {
         <span class="tabbar-icon" aria-hidden="true">◷</span><span class="tabbar-label">Cronómetro</span>
       </button>
       <button class="tabbar-settings" aria-label="Ajustes" @click="emit('openSettings')">
-        <span class="tabbar-icon" aria-hidden="true">⚙</span><span class="tabbar-label">Ajustes</span>
+        <span class="tabbar-icon" aria-hidden="true">⚙︎</span><span class="tabbar-label">Ajustes</span>
       </button>
     </div>
   </nav>
