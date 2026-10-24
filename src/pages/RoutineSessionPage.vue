@@ -94,7 +94,7 @@ onIonViewWillLeave(() => {
     </IonHeader>
     <aside class="session-side-rail" aria-label="Controles de sesión">
       <span class="session-side-brand" aria-hidden="true">kron<i>o</i></span>
-      <button class="session-side-back" aria-label="Volver a rutinas" @click="exitSession">←</button>
+      <button class="session-side-back" aria-label="Volver a rutinas" @click="exitSession">→</button>
     </aside>
     <IonContent class="app-content session-content" fullscreen>
       <main class="app session">
