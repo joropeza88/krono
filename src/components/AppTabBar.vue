@@ -6,7 +6,7 @@ const route = useRoute();
 const ionRouter = useIonRouter();
 const emit = defineEmits<{ openSettings: [] }>();
 
-function selectTab(path: "/rutinas" | "/cronometro") {
+function selectTab(path: "/rutinas" | "/cronometro" | "/progreso") {
   if (route.path === path) return;
   ionRouter.navigate(path, "none", "replace");
 }
@@ -21,6 +21,9 @@ function selectTab(path: "/rutinas" | "/cronometro") {
       </button>
       <button :class="{ active: route.path === '/cronometro' }" aria-label="Cronómetro" @click="selectTab('/cronometro')">
         <span class="tabbar-icon" aria-hidden="true">◷</span><span class="tabbar-label">Cronómetro</span>
+      </button>
+      <button :class="{ active: route.path === '/progreso' }" aria-label="Progreso" @click="selectTab('/progreso')">
+        <span class="tabbar-icon" aria-hidden="true">↗</span><span class="tabbar-label">Progreso</span>
       </button>
       <button class="tabbar-settings" aria-label="Ajustes" @click="emit('openSettings')">
         <span class="tabbar-icon" aria-hidden="true">⚙︎</span><span class="tabbar-label">Ajustes</span>

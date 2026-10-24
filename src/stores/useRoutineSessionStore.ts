@@ -2,6 +2,8 @@ import { computed, ref } from "vue";
 import { playCue, playMotivation, unlockAudio } from "../audio";
 import { createCountdownTimer } from "../services/countdownTimer";
 import { releaseScreenWakeLock, requestScreenWakeLock } from "../services/wakeLock";
+import { recordCompletedSession } from "../features/gamification/application/gamification-service";
+import { SessionActivityTracker } from "../features/gamification/application/session-activity-tracker";
 import { usePreferencesStore } from "./usePreferencesStore";
 import type { Phase, Routine } from "../types";
 
@@ -16,6 +18,7 @@ const paused = ref(false);
 const isPreparingNextExercise = ref(false);
 let pausedRemaining = 0;
 let motivationCued = false;
+const activityTracker = new SessionActivityTracker();
 
 const progress = computed(() =>
   phaseDuration.value
@@ -111,6 +114,7 @@ function startNextExercise(withCountdown: boolean) {
 async function start(routine: Routine) {
   await unlockAudio();
   prepare(routine);
+  activityTracker.start();
   await updateWakeLock();
   startPhase("countdown", 3);
 }
@@ -132,16 +136,32 @@ async function togglePause() {
   if (paused.value) {
     await unlockAudio();
     paused.value = false;
+    activityTracker.resume();
     countdown.start(phaseDuration.value || pausedRemaining, Date.now() + pausedRemaining * 1000);
     await updateWakeLock();
   } else {
     paused.value = true;
+    activityTracker.pause();
     pausedRemaining = countdown.pause();
     await updateWakeLock();
   }
 }
 
 function complete() {
+  const routine = activeRoutine.value;
+  const completedSession = routine
+    ? activityTracker.complete("routine", {
+        routineId: routine.id,
+        plannedSeconds:
+          routine.exerciseDuration * routine.exerciseCount * routine.cycleCount +
+          routine.restDuration * (routine.exerciseCount * routine.cycleCount - 1),
+      })
+    : undefined;
+  if (completedSession) {
+    void recordCompletedSession(completedSession).catch((error) =>
+      console.warn("No se pudo registrar la sesión para gamificación.", error),
+    );
+  }
   countdown.stop();
   remaining.value = 0;
   phase.value = "complete";
@@ -150,6 +170,7 @@ function complete() {
 }
 
 function finish() {
+  activityTracker.cancel();
   countdown.stop();
   activeRoutine.value = null;
   phase.value = "ready";

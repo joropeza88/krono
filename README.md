@@ -10,6 +10,7 @@ Una PWA móvil para crear y ejecutar rutinas de ejercicio por intervalos. Krono 
 - Recibe una señal tres segundos antes de cada ejercicio.
 - Activa sonidos motivacionales aleatorios durante tu entrenamiento.
 - Configura volumen y sonidos desde los ajustes.
+- Suma puntos por sesiones válidas, completa retos locales diarios/semanales y consulta tu progreso sin conexión.
 - Instálala como PWA y úsala sin conexión después de la primera visita.
 
 Krono no requiere cuenta y no recopila estadísticas: tus rutinas y preferencias permanecen en tu navegador.

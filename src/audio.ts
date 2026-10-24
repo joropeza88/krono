@@ -1,4 +1,5 @@
 import type { AudioPreferences } from './types'
+import { getSoundPack } from './features/gamification/domain/sound-catalog'
 
 type Cue = 'countdown' | 'exercise' | 'rest'
 
@@ -21,8 +22,8 @@ function packId(preferences: Pick<AudioPreferences, 'activeSoundPackId'>) {
   return preferences.activeSoundPackId?.trim() || 'default'
 }
 
-function soundUrl(pack: string, sound: string) {
-  return `/sounds/${encodeURIComponent(pack)}/${sound}.mp3`
+function soundUrl(pack: string, cue: Cue) {
+  return getSoundPack(pack)?.sounds[cue] || `/sounds/${encodeURIComponent(pack)}/${cueFiles[cue]}.mp3`
 }
 
 async function loadSound(url: string): Promise<boolean> {
@@ -54,7 +55,7 @@ async function loadSound(url: string): Promise<boolean> {
 /** Carga todos los recursos de un pack antes de permitir abrir la app. */
 export async function preloadSoundPack(pack = 'default') {
   const packs = pack === 'default' ? ['default'] : ['default', pack]
-  await Promise.all(packs.flatMap(currentPack => Object.values(cueFiles).map(sound => loadSound(soundUrl(currentPack, sound)))))
+  await Promise.all(packs.flatMap(currentPack => (Object.keys(cueFiles) as Cue[]).map(cue => loadSound(soundUrl(currentPack, cue)))))
 }
 
 /** Debe invocarse desde el toque que inicia una rutina para desbloquear iOS. */
@@ -82,8 +83,8 @@ export async function playCue(kind: Cue, preferences: AudioPreferences) {
   if (!preferences.enabled) return
 
   const sound = cueFiles[kind]
-  const selectedUrl = soundUrl(packId(preferences), sound)
-  const fallbackUrl = soundUrl('default', sound)
+  const selectedUrl = soundUrl(packId(preferences), kind)
+  const fallbackUrl = soundUrl('default', kind)
   let buffer = decodedSounds.get(selectedUrl) || decodedSounds.get(fallbackUrl)
 
   if (!buffer) {
@@ -104,6 +105,12 @@ export async function playCue(kind: Cue, preferences: AudioPreferences) {
   gain.gain.value = preferences.volume
   source.connect(gain).connect(context.destination)
   source.start()
+}
+
+/** Reproduce una muestra sin cambiar el pack configurado. */
+export async function previewSoundPack(pack: string, volume = 0.55) {
+  await unlockAudio()
+  await playCue('exercise', { enabled: true, volume, motivationalSoundsEnabled: false, activeSoundPackId: pack })
 }
 
 export function playMotivation(preferences: AudioPreferences) {

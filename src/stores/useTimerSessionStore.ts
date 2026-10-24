@@ -2,6 +2,8 @@ import { computed, ref } from "vue";
 import { playCue, unlockAudio } from "../audio";
 import { createCountdownTimer } from "../services/countdownTimer";
 import { releaseScreenWakeLock, requestScreenWakeLock } from "../services/wakeLock";
+import { recordCompletedSession } from "../features/gamification/application/gamification-service";
+import { SessionActivityTracker } from "../features/gamification/application/session-activity-tracker";
 import { usePreferencesStore } from "./usePreferencesStore";
 
 type TimerPhase = "setup" | "running" | "complete";
@@ -12,6 +14,7 @@ const phase = ref<TimerPhase>("setup");
 const remaining = ref(0);
 const paused = ref(false);
 let pausedRemaining = 0;
+const activityTracker = new SessionActivityTracker();
 
 const progress = computed(() => {
   const duration = minutes.value * 60;
@@ -32,6 +35,7 @@ async function start() {
   if (minutes.value < 1) return;
   await unlockAudio();
   prepare();
+  activityTracker.start();
   phase.value = "running";
   void playCue("exercise", preferences.value);
   await updateWakeLock();
@@ -50,15 +54,23 @@ async function togglePause() {
   if (paused.value) {
     await unlockAudio();
     paused.value = false;
+    activityTracker.resume();
     countdown.start(pausedRemaining);
   } else {
     paused.value = true;
+    activityTracker.pause();
     pausedRemaining = countdown.pause();
   }
   await updateWakeLock();
 }
 
 function complete() {
+  const completedSession = activityTracker.complete("free", { plannedSeconds: minutes.value * 60 });
+  if (completedSession) {
+    void recordCompletedSession(completedSession).catch((error) =>
+      console.warn("No se pudo registrar la sesión para gamificación.", error),
+    );
+  }
   countdown.stop();
   remaining.value = 0;
   paused.value = false;
@@ -69,6 +81,7 @@ function complete() {
 }
 
 function reset() {
+  activityTracker.cancel();
   countdown.stop();
   phase.value = "setup";
   paused.value = false;

@@ -879,7 +879,7 @@ button {
 }
 .tabbar-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
 }
 .tabbar button {
   display: grid;
@@ -1504,3 +1504,54 @@ main.app.session > .session {
     width: 100%;
   }
 }
+.progress-balance strong {
+  display: block;
+  font: 500 48px DM Mono, monospace;
+  letter-spacing: -0.08em;
+}
+.progress-balance small {
+  font: 700 15px Outfit, sans-serif;
+  letter-spacing: 0;
+}
+.progress-balance span {
+  font-weight: 700;
+}
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.progress-grid article {
+  display: grid;
+  gap: 5px;
+  padding: 16px 10px;
+  border: 1px solid #2b3333;
+  border-radius: 16px;
+  background: #1c2122;
+  text-align: center;
+}
+.progress-grid strong {
+  color: #b6f36c;
+  font-size: 23px;
+}
+.progress-grid span {
+  color: #9aaba4;
+  font-size: 11px;
+  line-height: 1.25;
+}
+.progress-next { margin: 14px 0 0 !important; font-size: 13px; opacity: .72; }
+.challenge-tabs { display: flex; gap: 6px; padding: 4px; border-radius: 12px; background: #202526; }
+.challenge-tabs button { border: 0; border-radius: 9px; padding: 7px 10px; background: transparent; color: #9aaba4; font-size: 12px; font-weight: 700; }
+.challenge-tabs button.active { background: #b6f36c; color: #101315; }
+.challenge-list, .transactions { display: grid; gap: 10px; margin-bottom: 28px; }
+.challenge { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; padding: 16px; border: 1px solid #2b3333; border-radius: 18px; background: #1c2122; }
+.challenge h3 { margin: 0 0 4px; font-size: 16px; text-transform: capitalize; }
+.challenge p { margin: 0; color: #9aaba4; font-size: 13px; }
+.challenge .eyebrow { margin-bottom: 7px; color: #b6f36c; font-size: 10px; }
+.challenge > strong { align-self: center; color: #b6f36c; font-size: 13px; }.challenge > strong.completed { color: #b6f36c; }
+.challenge-bar { grid-column: 1 / -1; height: 6px; overflow: hidden; border-radius: 99px; background: #303939; }.challenge-bar span { display: block; height: 100%; border-radius: inherit; background: #b6f36c; }
+.transactions article { display: flex; justify-content: space-between; padding: 13px 2px; border-bottom: 1px solid #2b3333; color: #cbd4cf; font-size: 14px; }.credit { color: #b6f36c; }.debit { color: #ffbbb9; }
+.setting-button { width: 100%; border: 0; text-align: left; cursor: pointer; }.setting-button > span { color: #b6f36c; font-size: 27px; }
+.sound-store { display: grid; gap: 12px; margin-top: 18px; }.sound-store article { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px; border: 1px solid #2b3333; border-radius: 18px; background: #1c2122; }.sound-store h2, .sound-store p { margin: 0; }.sound-store h2 { font-size: 19px; }.sound-store p:not(.eyebrow) { color: #9aaba4; font-size: 14px; }.sound-store .eyebrow { margin-bottom: 6px; }
+.sound-actions { display: grid; gap: 8px; min-width: 105px; }.sound-actions button { min-height: 40px; padding: 0 12px; border-radius: 12px; font-size: 12px; }.sound-message { color: #b6f36c; }
