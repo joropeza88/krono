@@ -24,8 +24,8 @@ export function useAppEnvironment() {
   const mobileOrTablet = ref(false);
 
   function update() {
-    installed.value = true; //isInstalledApp();
-    mobileOrTablet.value = true; //isMobileOrTablet();
+    installed.value = isInstalledApp();
+    mobileOrTablet.value = isMobileOrTablet();
   }
 
   onMounted(() => {
