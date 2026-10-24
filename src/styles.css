@@ -863,8 +863,7 @@ button {
   z-index: 10;
   bottom: max(14px, env(safe-area-inset-bottom));
   left: 50%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: block;
   width: min(calc(100% - 32px), 468px);
   padding: 6px;
   border: 1px solid #35403e;
@@ -874,6 +873,13 @@ button {
   transform: translateX(-50%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
   backdrop-filter: blur(18px) saturate(140%);
+}
+.tabbar-brand {
+  display: none;
+}
+.tabbar-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 .tabbar button {
   display: grid;
@@ -887,9 +893,12 @@ button {
   font-size: 12px;
   font-weight: 700;
 }
-.tabbar button span {
+.tabbar-icon {
   font-size: 20px;
   line-height: 1;
+}
+.tabbar-settings {
+  display: none !important;
 }
 .tabbar button.active {
   background: #b6f36c;
@@ -916,6 +925,65 @@ button {
 .tabbar a.active {
   background: #b6f36c;
   color: #101315;
+}
+/* Landscape compacto: la navegación inferior se convierte en una barra lateral.
+   El comportamiento y las rutas son los mismos; solo cambia su presentación. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .app-header {
+    display: none;
+  }
+  .app {
+    width: auto;
+    min-height: 100dvh;
+    margin: 0 20px 0 68px;
+    padding: 20px;
+  }
+  .app:has(.tabbar) {
+    padding-bottom: 28px;
+  }
+  .tabbar {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    width: 68px;
+    padding: 10px 8px max(10px, env(safe-area-inset-bottom));
+    border: 0;
+    border-right: 1px solid #35403e;
+    border-radius: 0;
+    background: rgba(22, 28, 28, 0.9);
+    box-shadow: none;
+    transform: none;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .tabbar-brand {
+    display: block;
+    color: #f6f7f2;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.08em;
+    text-align: center;
+  }
+  .tabbar-brand i {
+    color: #b6f36c;
+    font-style: normal;
+  }
+  .tabbar-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .tabbar button {
+    min-height: 50px;
+    border-radius: 15px;
+  }
+  .tabbar-label {
+    display: none;
+  }
+  .tabbar-settings {
+    display: grid !important;
+  }
 }
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .app-header ion-toolbar,
@@ -1025,6 +1093,10 @@ ion-modal::part(content) {
   height: 44px;
   border-radius: 14px;
   font-size: 20px;
+}
+.settings-button,
+.tabbar-settings .tabbar-icon {
+  font-size: 30px;
 }
 .eyebrow {
   color: #9aaba4;
@@ -1190,6 +1262,13 @@ ion-modal::part(content) {
   min-height: 100%;
   flex-direction: column;
 }
+.session-timer-panel,
+.session-actions-panel {
+  display: contents;
+}
+.session-side-rail {
+  display: none;
+}
 .session-content .app {
   min-height: 100%;
   padding-top: max(72px, calc(72px + env(safe-area-inset-top)));
@@ -1302,4 +1381,100 @@ ion-modal::part(content) {
 }
 .preparing-next-exercise .timer-wrap {
   background: conic-gradient(#f5ce76 var(--progress), #3b3523 0);
+}
+/* Las sesiones aprovechan el ancho horizontal sin alterar su composición en retrato. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .session-header {
+    display: none;
+  }
+  .session-side-rail {
+    position: fixed;
+    z-index: 20;
+    inset: 0 auto 0 0;
+    display: flex;
+    width: 68px;
+    padding: 10px 8px max(10px, env(safe-area-inset-bottom));
+    border-right: 1px solid #35403e;
+    background: rgba(22, 28, 28, 0.9);
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+  }
+  .session-side-brand {
+    color: #f6f7f2;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.08em;
+  }
+  .session-side-brand i {
+    color: #b6f36c;
+    font-style: normal;
+  }
+  .session-side-back {
+    display: grid;
+    width: 50px;
+    min-height: 50px;
+    place-items: center;
+    border: 0;
+    border-radius: 15px;
+    background: #293131;
+    color: #b6f36c;
+    font-size: 25px;
+    line-height: 1;
+  }
+  .session-content .app {
+    width: auto;
+    min-height: 100dvh;
+    margin: 0 20px 0 68px;
+    padding: 20px;
+  }
+  main.app.session {
+    display: block;
+    text-align: initial;
+  }
+  main.app.session > .session {
+    display: grid;
+    width: min(100%, 920px);
+    min-height: 100%;
+    margin: auto;
+    grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+    align-items: center;
+    gap: clamp(30px, 6vw, 74px);
+    text-align: left;
+  }
+  .session-timer-panel {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    text-align: center;
+  }
+  .session-actions-panel {
+    display: grid;
+    align-content: center;
+    gap: 18px;
+    padding: 24px 0 24px clamp(24px, 4vw, 54px);
+    border-left: 1px solid #35403e;
+  }
+  .session-state {
+    margin-top: 0;
+  }
+  .session-title {
+    font-size: 23px;
+  }
+  .session-content .timer-wrap {
+    width: min(58vh, 300px);
+    height: min(58vh, 300px);
+    margin: 12px auto;
+  }
+  .timer strong {
+    font-size: clamp(48px, 10vw, 72px);
+  }
+  .session-meta {
+    margin: 0;
+  }
+  .session-controls {
+    width: 100%;
+  }
 }

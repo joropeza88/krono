@@ -70,7 +70,7 @@ async function startRoutine(routine: Routine) {
       <IonToolbar>
         <header class="top app-top">
           <div class="brand">kron<i>o</i></div>
-          <button class="icon-button" aria-label="Ajustes" @click="isSettingsOpen = true">
+          <button class="icon-button settings-button" aria-label="Ajustes" @click="isSettingsOpen = true">
             ⚙
           </button>
         </header>
@@ -132,7 +132,7 @@ async function startRoutine(routine: Routine) {
           ]"
           @did-dismiss="cancelRoutineDeletion"
         />
-        <AppTabBar />
+        <AppTabBar @open-settings="isSettingsOpen = true" />
       </main>
     </IonContent>
   </IonPage>

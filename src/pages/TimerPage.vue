@@ -22,7 +22,7 @@ async function startTimer() {
       <IonToolbar>
         <header class="top app-top">
           <div class="brand">kron<i>o</i></div>
-          <button class="icon-button" aria-label="Ajustes" @click="isSettingsOpen = true">
+          <button class="icon-button settings-button" aria-label="Ajustes" @click="isSettingsOpen = true">
             ⚙
           </button>
         </header>
@@ -45,7 +45,7 @@ async function startTimer() {
           <button class="primary" @click="startTimer">Preparar cronómetro</button>
         </section>
         <SettingsSheet :open="isSettingsOpen" @close="isSettingsOpen = false" />
-        <AppTabBar />
+        <AppTabBar @open-settings="isSettingsOpen = true" />
       </main>
     </IonContent>
   </IonPage>

@@ -92,34 +92,42 @@ onIonViewWillLeave(() => {
         <IonTitle>{{ activeRoutine?.name }}</IonTitle>
       </IonToolbar>
     </IonHeader>
+    <aside class="session-side-rail" aria-label="Controles de sesión">
+      <span class="session-side-brand" aria-hidden="true">kron<i>o</i></span>
+      <button class="session-side-back" aria-label="Volver a rutinas" @click="exitSession">←</button>
+    </aside>
     <IonContent class="app-content session-content" fullscreen>
       <main class="app session">
         <section class="session">
-          <div class="session-state">{{ label }}</div>
-          <h1 class="session-title">{{ title }}</h1>
-          <div class="timer-wrap" :style="{ '--progress': `${progress}%` }">
-            <div class="timer">
-              <strong>{{ formattedTime }}</strong
-              ><span v-if="phase !== 'complete'">{{ timerHint }}</span>
+          <div class="session-timer-panel">
+            <div class="session-state">{{ label }}</div>
+            <h1 class="session-title">{{ title }}</h1>
+            <div class="timer-wrap" :style="{ '--progress': `${progress}%` }">
+              <div class="timer">
+                <strong>{{ formattedTime }}</strong
+                ><span v-if="phase !== 'complete'">{{ timerHint }}</span>
+              </div>
             </div>
           </div>
-          <p v-if="phase === 'ready'" class="session-meta">Todo listo. Tú marcas el comienzo.</p>
-          <p v-else-if="activeRoutine && phase !== 'complete'" class="session-meta">
-            Ejercicio {{ exercise }} de {{ activeRoutine.exerciseCount }} · Ciclo {{ cycle }} de
-            {{ activeRoutine.cycleCount }}
-          </p>
-          <p v-else class="session-meta">Rutina finalizada. Gran trabajo.</p>
-          <div v-if="phase === 'ready'" class="session-controls">
-            <button class="primary start-session" @click="startSession">Iniciar</button>
+          <div class="session-actions-panel">
+            <p v-if="phase === 'ready'" class="session-meta">Todo listo. Tú marcas el comienzo.</p>
+            <p v-else-if="activeRoutine && phase !== 'complete'" class="session-meta">
+              Ejercicio {{ exercise }} de {{ activeRoutine.exerciseCount }} · Ronda {{ cycle }} de
+              {{ activeRoutine.cycleCount }}
+            </p>
+            <p v-else class="session-meta">Rutina finalizada. Gran trabajo.</p>
+            <div v-if="phase === 'ready'" class="session-controls">
+              <button class="primary start-session" @click="startSession">Iniciar</button>
+            </div>
+            <div v-else-if="phase !== 'complete'" class="session-controls">
+              <button class="primary pause-session" @click="session.togglePause">
+                {{ paused ? "Reanudar" : "Pausar" }}
+              </button>
+              <button class="secondary" @click="restart">Reiniciar</button>
+              <button class="danger" @click="exitSession">Finalizar sesión</button>
+            </div>
+            <button v-else class="primary wide" @click="exitSession">Volver al inicio</button>
           </div>
-          <div v-else-if="phase !== 'complete'" class="session-controls">
-            <button class="primary pause-session" @click="session.togglePause">
-              {{ paused ? "Reanudar" : "Pausar" }}
-            </button>
-            <button class="secondary" @click="restart">Reiniciar</button>
-            <button class="danger" @click="exitSession">Finalizar sesión</button>
-          </div>
-          <button v-else class="primary wide" @click="exitSession">Volver al inicio</button>
         </section>
       </main>
     </IonContent>
