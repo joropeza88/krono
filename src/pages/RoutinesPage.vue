@@ -62,6 +62,10 @@ async function startRoutine(routine: Routine) {
   routineSession.prepare(routine);
   ionRouter.navigate("/rutinas/sesion", "forward", "push");
 }
+
+function openRepetitionsLab() {
+  ionRouter.navigate("/laboratorio-repeticiones", "forward", "push");
+}
 </script>
 
 <template>
@@ -85,6 +89,9 @@ async function startRoutine(routine: Routine) {
           <p>Crea una rutina y deja que Krono marque el ritmo.</p>
           <button class="primary" @click="openNewRoutine">Crear rutina</button>
         </section>
+        <button class="repetitions-lab-link" @click="openRepetitionsLab">
+          <span>◌</span><div><strong>Probar contador con cámara</strong><small>Laboratorio de repeticiones</small></div><b>→</b>
+        </button>
         <div class="section-head">
           <h2>Tus rutinas</h2>
           <span class="eyebrow">{{ routines.length }}</span>

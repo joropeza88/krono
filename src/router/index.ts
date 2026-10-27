@@ -14,5 +14,6 @@ export const router = createRouter({
     { path: "/cronometro", name: "timer", component: TimerPage },
     { path: "/progreso", name: "progress", component: ProgressPage },
     { path: "/cronometro/activo", name: "timer-session", component: TimerSessionPage },
+    { path: "/laboratorio-repeticiones", name: "repetitions-lab", component: () => import("../pages/RepetitionsLab.vue") },
   ],
 });

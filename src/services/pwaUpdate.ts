@@ -30,7 +30,8 @@ export class PwaUpdateService {
   async start() {
     if (this.started || !("serviceWorker" in navigator)) return;
     this.started = true;
-    this.registration = await navigator.serviceWorker.register(this.workerUrl);
+    // Evita que el navegador reutilice una copia HTTP antigua de sw.js al buscar actualizaciones.
+    this.registration = await navigator.serviceWorker.register(this.workerUrl, { updateViaCache: "none" });
     this.watchRegistration(this.registration);
     this.watchController();
     this.intervalId = window.setInterval(() => void this.checkForUpdate(), this.checkIntervalMs);

@@ -1130,6 +1130,41 @@ ion-modal::part(content) {
   margin: 0 0 20px;
   font-weight: 500;
 }
+.repetitions-lab-link { display: flex; width: 100%; align-items: center; gap: 13px; margin: 18px 0 30px; border: 1px solid #405044; border-radius: 16px; padding: 14px 16px; background: #18201e; color: #e4efdf; text-align: left; }
+.repetitions-lab-link > span { color: #b6f36c; font-size: 25px; }
+.repetitions-lab-link div { display: grid; gap: 3px; flex: 1; }
+.repetitions-lab-link strong { font-size: 14px; }
+.repetitions-lab-link small { color: #9caf9f; font-size: 12px; }
+.repetitions-lab-link b { color: #b6f36c; font-size: 20px; }
+.repetition-prep { display: grid; gap: 14px; }
+.lab-back { min-height: 44px; border: 0; padding: 0 16px; background: transparent; color: #b6f36c; font-size: 17px; font-weight: 700; }
+.lab-back span { margin-left: 4px; font-size: 14px; }
+.repetition-prep h2 { margin: 0; }
+.repetition-prep p { margin: 0; }
+.repetition-prep label { display: grid; gap: 7px; color: #b9c7bd; font-size: 13px; font-weight: 700; }
+.repetition-prep select { min-height: 48px; border: 1px solid #405044; border-radius: 13px; padding: 0 12px; background: #edf7e1; color: #101315; font: inherit; }
+.repetition-view { color: #b6f36c; }
+.repetition-error { color: #ffaaa4; }
+.repetition-completed { width: 100%; margin-top: 8px; }
+.repetition-completed label { display: grid; gap: 6px; margin: 16px 0; color: #b9c7bd; font-size: 13px; font-weight: 700; text-align: left; }
+.repetition-completed input { min-height: 46px; border: 1px solid #405044; border-radius: 12px; padding: 0 12px; background: #edf7e1; color: #101315; font: inherit; }
+.repetition-completed button + button { margin-top: 9px; }
+.repetition-session { display: grid; justify-items: center; text-align: center; }
+.repetition-session .eyebrow { margin-bottom: 20px; }
+.repetition-count { display: flex; align-items: baseline; color: #b6f36c; font-family: DM Mono, monospace; }
+.repetition-count strong { font-size: clamp(92px, 31vw, 144px); letter-spacing: -0.12em; line-height: .9; }
+.repetition-count span { margin-left: 14px; color: #87968e; font-size: 25px; }
+.repetition-round { margin: 18px 0 5px; color: #dce7d6; font-weight: 700; }
+.repetition-status { margin: 0 0 25px; color: #b6f36c; font-size: 14px; font-weight: 700; }
+.repetition-controls { display: flex; width: 100%; gap: 10px; margin: 5px 0; }
+.repetition-controls button { flex: 1; }
+.repetition-controls button:disabled { opacity: .4; }
+.debug-toggle { margin: 24px 0 12px; color: #b9c7bd; font-size: 13px; }
+.repetition-debug { width: 100%; overflow: hidden; border: 1px solid #35403e; border-radius: 16px; padding: 10px; background: #151a1b; text-align: left; }
+.repetition-video { position: relative; overflow: hidden; border-radius: 10px; background: #050606; }
+.repetition-debug video, .repetition-debug canvas { display: block; width: 100%; max-height: 300px; background: #050606; object-fit: cover; transform: scaleX(-1); }
+.repetition-debug canvas { position: absolute; inset: 0; height: 100%; }
+.repetition-debug p { margin: 9px 2px 0; color: #aebcb4; font: 12px DM Mono, monospace; }
 .primary,
 .secondary,
 .danger {
