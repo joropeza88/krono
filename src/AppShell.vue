@@ -7,6 +7,7 @@ import { usePreferencesStore } from "./stores/usePreferencesStore";
 import { useRoutineSessionStore } from "./stores/useRoutineSessionStore";
 import { useTimerSessionStore } from "./stores/useTimerSessionStore";
 import Landing from "./pages/Landing.vue";
+import PwaUpdateNotice from "./components/PwaUpdateNotice.vue";
 import { useAppEnvironment } from "./services/appEnvironment";
 
 const { preferences } = usePreferencesStore();
@@ -35,6 +36,6 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <IonApp v-if="shouldShowApp"><IonRouterOutlet :animated="true" mode="ios" /></IonApp>
+  <IonApp v-if="shouldShowApp"><IonRouterOutlet :animated="true" mode="ios" /><PwaUpdateNotice /></IonApp>
   <Landing v-else />
 </template>
