@@ -9,6 +9,7 @@ export class RepetitionEngine {
   private detector: ExerciseDetector;
   private counter = new RepetitionCounter();
   private restTimer?: number;
+  private completionTimer?: number;
   private restEndsAt = 0;
   private state: RepetitionState;
   constructor(private readonly config: RoutineConfig, private readonly onEvent: (event: RepetitionEvent) => void) {
@@ -19,10 +20,10 @@ export class RepetitionEngine {
   getState() { return structuredClone(this.state); }
   start() { this.state.phase = "active"; this.state.startedAt ??= performance.now(); this.counter.reset(); this.emit("round-started"); }
   ready() { this.state.phase = "ready"; this.emit("ready"); }
-  pause() { if (this.state.phase !== "active" && this.state.phase !== "resting") return; this.clearRest(); this.state.phase = "paused"; this.counter.reset(); this.emit("paused"); }
-  resume() { if (this.state.phase !== "paused") return; this.state.phase = "active"; this.counter.reset(); this.emit("resumed"); }
-  stop() { this.clearRest(); this.state.phase = "stopped"; this.counter.reset(); this.emit("stopped"); }
-  restart() { this.clearRest(); this.state = this.createState("active", performance.now()); this.detector = createDetector(this.state.exerciseId); this.counter.reset(); this.emit("round-started"); }
+  pause() { if (this.state.phase !== "active" && this.state.phase !== "resting") return; this.clearRest(); this.clearCompletion(); this.state.phase = "paused"; this.counter.reset(); this.emit("paused"); }
+  resume() { if (this.state.phase !== "paused") return; this.state.phase = "active"; this.counter.reset(); this.emit("resumed"); if (this.state.isSetComplete) this.scheduleSetCompletion(); }
+  stop() { this.clearRest(); this.clearCompletion(); this.state.phase = "stopped"; this.counter.reset(); this.emit("stopped"); }
+  restart() { this.clearRest(); this.clearCompletion(); this.state = this.createState("active", performance.now()); this.detector = createDetector(this.state.exerciseId); this.counter.reset(); this.emit("round-started"); }
   process(detectorState: DetectorState, detail?: string) {
     const wasTrackingLost = this.state.detectorState === "tracking-lost";
     this.state.detectorState = detectorState;
@@ -47,7 +48,16 @@ export class RepetitionEngine {
     if (next === this.state.targetReps) this.completeSet();
   }
   private completeSet() {
-    this.counter.reset(); this.emit("set-completed");
+    this.counter.reset(); this.state.isSetComplete = true; this.emit("set-completed"); this.scheduleSetCompletion();
+  }
+  private scheduleSetCompletion() {
+    this.clearCompletion();
+    this.completionTimer = window.setTimeout(() => this.finishSet(), 1000);
+  }
+  private finishSet() {
+    this.completionTimer = undefined;
+    if (!this.state.isSetComplete || this.state.phase !== "active") return;
+    this.state.isSetComplete = false;
     const finalExercise = this.state.exerciseIndex === this.state.exerciseCount - 1;
     if (finalExercise && this.state.round >= this.state.rounds) { this.state.phase = "completed"; this.state.finishedAt = performance.now(); this.emit("workout-completed"); return; }
     this.state.phase = "resting"; this.restEndsAt = performance.now() + this.config.restSeconds * 1000; this.tickRest(); this.restTimer = window.setInterval(() => this.tickRest(), 250);
@@ -65,8 +75,9 @@ export class RepetitionEngine {
   }
   private createState(phase: RepetitionState["phase"], startedAt?: number): RepetitionState {
     const exercise = this.config.exercises[0];
-    return { phase, exerciseId: exercise.exerciseId, targetReps: exercise.targetReps, reps: 0, round: 1, rounds: this.config.rounds, exerciseIndex: 0, exerciseCount: this.config.exercises.length, restRemainingSeconds: 0, detectorState: "tracking-lost", ...(startedAt ? { startedAt } : {}), metrics: metrics() };
+    return { phase, exerciseId: exercise.exerciseId, targetReps: exercise.targetReps, reps: 0, round: 1, rounds: this.config.rounds, exerciseIndex: 0, exerciseCount: this.config.exercises.length, isSetComplete: false, restRemainingSeconds: 0, detectorState: "tracking-lost", ...(startedAt ? { startedAt } : {}), metrics: metrics() };
   }
   private clearRest() { if (this.restTimer) window.clearInterval(this.restTimer); this.restTimer = undefined; }
+  private clearCompletion() { if (this.completionTimer) window.clearTimeout(this.completionTimer); this.completionTimer = undefined; }
   private emit(type: RepetitionEvent["type"], detail?: string, source?: "automatic" | "manual") { this.state.metrics.events.push({ type, at: performance.now() }); if (this.state.metrics.events.length > 40) this.state.metrics.events.shift(); this.onEvent({ type, state: this.getState(), ...(detail ? { detail } : {}), ...(source ? { source } : {}) } as RepetitionEvent); }
 }

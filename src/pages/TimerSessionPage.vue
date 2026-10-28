@@ -96,7 +96,7 @@ onIonViewWillLeave(() => {
                 {{ paused ? "Reanudar" : "Pausar" }}
               </button>
               <button class="secondary" @click="session.start">Reiniciar</button>
-              <button class="danger" @click="finish">Finalizar</button>
+              <button class="danger" @click="finish">Terminar</button>
             </div>
             <button v-else class="primary wide" @click="finish">Nuevo cronómetro</button>
           </div>

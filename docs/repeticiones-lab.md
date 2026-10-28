@@ -17,4 +17,4 @@ En iPhone y otros navegadores, la cámara requiere HTTPS (o localhost) y el perm
 
 ## Validación pendiente en dispositivo físico
 
-La compilación valida tipos y empaquetado. Aún se debe probar en iPhone/Safari/PWA instalada: permiso de cámara, conteo de ambos ejercicios, pausa, transiciones de descanso, ocultar depuración, liberación de cámara al salir y reapertura offline tras la primera descarga. La pantalla muestra FPS, milisegundos por inferencia y pérdidas de seguimiento para esa evaluación.
+La compilación valida tipos y empaquetado. Aún se debe probar en iPhone/Safari/PWA instalada: permiso de cámara, conteo de ambos ejercicios, pausa, transiciones de descanso, liberación de cámara al salir y reapertura offline tras la primera descarga.

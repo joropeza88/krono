@@ -1150,15 +1150,11 @@ ion-modal::part(content) {
 .repetition-plan strong { font-size: 14px; }
 .repetition-plan small { color: #aebcb4; font-size: 12px; }
 .repetition-error { color: #ffaaa4; }
-.repetition-completed { width: 100%; margin-top: 8px; }
-.repetition-completed label { display: grid; gap: 6px; margin: 16px 0; color: #b9c7bd; font-size: 13px; font-weight: 700; text-align: left; }
-.repetition-completed input { min-height: 46px; border: 1px solid #405044; border-radius: 12px; padding: 0 12px; background: #edf7e1; color: #101315; font: inherit; }
-.repetition-completed button + button { margin-top: 9px; }
 .repetition-session { display: grid; justify-items: center; text-align: center; }
 .repetition-session .eyebrow { margin-bottom: 20px; }
 .repetition-count { display: flex; align-items: baseline; color: #b6f36c; font-family: DM Mono, monospace; }
-.repetition-count strong { font-size: clamp(92px, 31vw, 144px); letter-spacing: -0.12em; line-height: .9; }
-.repetition-count span { margin-left: 14px; color: #87968e; font-size: 25px; }
+.repetition-count strong { font-size: clamp(112px, 36vw, 168px); letter-spacing: -0.12em; line-height: .86; }
+.repetition-count span { margin-left: 16px; color: #87968e; font-size: 30px; }
 .repetition-round { margin: 18px 0 5px; color: #dce7d6; font-weight: 700; }
 .repetition-status { margin: 0 0 25px; color: #b6f36c; font-size: 14px; font-weight: 700; }
 .repetition-controls { display: flex; width: 100%; gap: 10px; margin: 5px 0; }
@@ -1169,21 +1165,27 @@ ion-modal::part(content) {
 .repetition-video { position: relative; overflow: hidden; border-radius: 10px; background: #050606; }
 .repetition-debug video, .repetition-debug canvas { display: block; width: 100%; max-height: 300px; background: #050606; object-fit: cover; transform: scaleX(-1); }
 .repetition-debug canvas { position: absolute; inset: 0; height: 100%; }
-.repetitions-lab.repetitions-live { width: 100%; min-height: 100dvh; padding: 0; background: #050606; }
-.repetitions-live .repetition-session { position: relative; display: block; min-height: 100dvh; overflow: hidden; color: #f6f7f2; }
+.repetitions-lab.repetitions-live { width: 100%; height: 100%; min-height: 100%; padding: 0; background: #050606; }
+.repetitions-live .repetition-session { position: relative; display: block; height: 100%; min-height: 100%; overflow: hidden; color: #f6f7f2; }
 .repetitions-live .repetition-video { position: absolute; inset: 0; border-radius: 0; background: #050606; }
 .repetitions-live .repetition-video video, .repetitions-live .repetition-video canvas { width: 100%; height: 100%; max-height: none; border-radius: 0; object-fit: cover; transform: scaleX(-1); }
 .repetitions-live .repetition-video canvas { position: absolute; inset: 0; background: transparent; }
 .repetition-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4, 7, 6, .72) 0%, rgba(4, 7, 6, .08) 36%, rgba(4, 7, 6, .2) 56%, rgba(4, 7, 6, .86) 100%); pointer-events: none; }
-.repetition-hud { position: relative; z-index: 1; display: flex; min-height: 100dvh; flex-direction: column; justify-content: space-between; padding: calc(74px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom)); }
+.repetition-hud { position: relative; z-index: 1; display: flex; min-height: 100%; flex-direction: column; justify-content: space-between; padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); }
 .repetition-session-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }
 .repetition-session-top .eyebrow { margin: 0; color: #dff8be; }
 .repetition-session-top span { border: 1px solid rgba(246, 247, 242, .25); border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 700; }
-.repetition-focus { display: grid; justify-items: center; margin: auto 0; padding: 20px 0; }
+.repetition-focus { display: grid; justify-items: center; gap: 18px; margin: auto 0; padding: 20px 0; }
+.repetition-exercise-name { margin: 0; color: #f6f7f2; font-size: clamp(28px, 8vw, 38px); font-weight: 800; letter-spacing: -.055em; line-height: .95; text-shadow: 0 2px 14px #000; }
 .repetitions-live .repetition-count { color: #f6f7f2; text-shadow: 0 3px 26px rgba(0, 0, 0, .62); }
 .repetitions-live .repetition-count span { color: #dce7d6; }
-.repetitions-live .repetition-round { margin: 0 0 6px; color: #dce7d6; text-shadow: 0 2px 12px #000; }
-.repetitions-live .repetition-status { margin: 8px 0; color: #b6f36c; text-shadow: 0 2px 12px #000; }
+.repetitions-live .repetition-round { margin: 0; color: #dce7d6; text-shadow: 0 2px 12px #000; }
+.repetitions-live .repetition-status { display: flex; align-items: center; gap: 7px; margin: 0; color: #b6f36c; text-shadow: 0 2px 12px #000; }
+.repetition-status i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent); }
+.repetition-view-pill { border: 1px solid rgba(246, 247, 242, .25); border-radius: 999px; padding: 6px 10px; color: #f6f7f2; font-size: 12px; font-weight: 700; text-shadow: 0 2px 12px #000; }
+.repetition-status.is-lost { color: #f17d75; }
+.repetition-status.is-resting { color: #83c9ff; }
+.repetition-status.is-preparing { color: #f5ce76; }
 .repetition-session.resting .repetition-shade { background: linear-gradient(180deg, rgba(6, 22, 34, .78) 0%, rgba(20, 80, 112, .18) 42%, rgba(5, 20, 31, .9) 100%); }
 .repetition-session.resting .repetition-count, .repetition-session.resting .repetition-status { color: #83c9ff; }
 .repetition-session.preparing .repetition-shade { background: linear-gradient(180deg, rgba(38, 29, 7, .8) 0%, rgba(123, 93, 16, .18) 42%, rgba(36, 27, 6, .9) 100%); }
@@ -1195,7 +1197,6 @@ ion-modal::part(content) {
 .repetition-finish { display: grid; gap: 9px; margin-top: auto; padding: 18px; border: 1px solid rgba(246, 247, 242, .2); border-radius: 18px; background: rgba(12, 16, 15, .74); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); text-align: left; }
 .repetition-finish p { margin: 0; color: #e4ece0; font-size: 13px; }
 .repetition-finish label { display: grid; gap: 5px; color: #dce7d6; font-size: 12px; font-weight: 700; }
-.repetition-finish input { min-height: 43px; border: 1px solid #51605a; border-radius: 10px; padding: 0 10px; background: #edf7e1; color: #101315; font: inherit; }
 .repetition-debug p { margin: 9px 2px 0; color: #aebcb4; font: 12px DM Mono, monospace; }
 .primary,
 .secondary,

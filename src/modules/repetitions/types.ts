@@ -30,6 +30,7 @@ export type RepetitionState = {
   rounds: number;
   exerciseIndex: number;
   exerciseCount: number;
+  isSetComplete: boolean;
   restRemainingSeconds: number;
   detectorState: DetectorState;
   startedAt?: number;

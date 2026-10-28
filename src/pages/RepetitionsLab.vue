@@ -17,19 +17,15 @@ let frame = 0;
 let processing = false;
 const error = ref("");
 const state = ref<RepetitionState>();
-const observedReps = ref<number>();
 let lastCountdownCue: number | undefined;
 const view = computed(() => getExercise(state.value?.exerciseId ?? TEST_ROUTINE.exercises[0].exerciseId));
 const isSession = computed(() => Boolean(state.value && !["idle", "stopped", "error"].includes(state.value.phase)));
 const isPreparing = computed(() => state.value?.phase === "resting" && state.value.restRemainingSeconds > 0 && state.value.restRemainingSeconds <= 3);
-const guidance = computed(() => {
-  if (isPreparing.value) return "Prepárate: la siguiente ronda empieza en breve.";
-  if (state.value?.phase === "resting") return "Recupera el aire. La siguiente ronda comienza enseguida.";
-  if (state.value?.phase === "paused") return "Sesión pausada. Reanuda cuando estés listo.";
-  if (state.value?.phase === "completed") return "Rutina terminada. Buen trabajo.";
-  if (state.value?.detectorState === "tracking-lost") return "Aléjate un poco y muestra cuerpo completo, manos y pies.";
-  return view.value.cameraView === "side" ? "Mantente de perfil y deja visible cadera, rodilla y tobillo." : "Mira de frente y deja visibles manos y pies.";
-});
+const statusClass = computed(() => ({
+  "is-resting": state.value?.phase === "resting" && !isPreparing.value,
+  "is-preparing": isPreparing.value,
+  "is-lost": state.value?.phase === "active" && !state.value.isSetComplete && state.value.detectorState === "tracking-lost",
+}));
 
 function update(next: RepetitionState) { state.value = next; }
 function eventSound(type: string, next: RepetitionState) {
@@ -42,7 +38,6 @@ function eventSound(type: string, next: RepetitionState) {
 }
 async function start() {
   error.value = "";
-  observedReps.value = undefined;
   try {
     await unlockAudio();
     engine?.stop();
@@ -92,12 +87,6 @@ function stop() { engine?.stop(); cancelAnimationFrame(frame); camera.stop(); }
 function restart() { stop(); engine = undefined; void start(); }
 function leave() { stop(); detector.dispose(); }
 function leaveAndReturn() { leave(); ionRouter.navigate("/rutinas", "back", "replace"); }
-function exportDiagnostics() {
-  if (!state.value) return;
-  const payload = { exportedAt: new Date().toISOString(), routine: TEST_ROUTINE, observedReps: observedReps.value ?? null, automaticReps: state.value.metrics.automaticReps, difference: observedReps.value === undefined ? null : state.value.metrics.automaticReps - observedReps.value, metrics: state.value.metrics };
-  const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
-  const link = document.createElement("a"); link.href = url; link.download = "krono-repeticiones-diagnostico.json"; link.click(); URL.revokeObjectURL(url);
-}
 onBeforeUnmount(leave);
 </script>
 
@@ -114,10 +103,9 @@ onBeforeUnmount(leave);
         <div class="repetition-video"><video ref="video" autoplay muted playsinline></video><canvas ref="overlay" aria-label="Esqueleto detectado" /></div>
         <div class="repetition-shade"></div>
         <div class="repetition-hud">
-          <div class="repetition-session-top"><p class="eyebrow">{{ view.name }}</p><span>Vista {{ view.cameraView === 'side' ? 'lateral' : 'frontal' }}</span></div>
-          <div class="repetition-focus"><p class="repetition-round">Ejercicio {{ state.exerciseIndex + 1 }} de {{ state.exerciseCount }} · Ronda {{ state.round }} de {{ state.rounds }}</p><div class="repetition-count"><strong>{{ state.phase === 'resting' ? state.restRemainingSeconds : state.reps }}</strong><span>{{ state.phase === 'resting' ? 's' : `/ ${state.targetReps}` }}</span></div><p class="repetition-status">{{ isPreparing ? 'Prepárate' : state.phase === 'resting' ? 'Descansando' : state.phase === 'paused' ? 'Pausado' : state.phase === 'completed' ? 'Prueba terminada' : state.detectorState === 'tracking-lost' ? 'Fuera de cuadro' : 'Detectando' }}</p><p class="repetition-guidance">{{ guidance }}</p></div>
-          <div v-if="state.phase === 'completed'" class="repetition-finish"><p>{{ state.rounds }} rondas completadas · {{ state.metrics.manualCorrections }} correcciones.</p><label>Repeticiones observadas <input v-model.number="observedReps" type="number" min="0" inputmode="numeric" placeholder="Opcional" /></label><p v-if="observedReps !== undefined">Automáticas: {{ state.metrics.automaticReps }} · Diferencia: {{ state.metrics.automaticReps - observedReps }}</p><button class="secondary wide" @click="exportDiagnostics">Exportar diagnóstico</button><button class="primary wide" @click="restart">Repetir prueba</button></div>
-          <template v-else><div class="repetition-controls"><button class="secondary" :disabled="state.phase !== 'active'" @click="engine?.removeRepetition()">−1</button><button class="secondary" :disabled="state.phase !== 'active'" @click="engine?.addRepetition()">+1</button></div><div class="repetition-controls repetition-actions"><button class="secondary" @click="pauseOrResume">{{ state.phase === 'paused' ? 'Reanudar' : 'Pausar' }}</button><button class="danger" @click="stop">Detener</button><button class="secondary" @click="restart">Reiniciar</button></div></template>
+          <div class="repetition-focus"><p class="repetition-round">Ejercicio {{ state.exerciseIndex + 1 }} de {{ state.exerciseCount }} · Ronda {{ state.round }} de {{ state.rounds }}</p><p class="repetition-exercise-name">{{ view.name }}</p><div class="repetition-count"><strong>{{ state.phase === 'resting' ? state.restRemainingSeconds : state.reps }}</strong><span>{{ state.phase === 'resting' ? 's' : `/ ${state.targetReps}` }}</span></div><p class="repetition-status" :class="statusClass"><i></i>{{ state.isSetComplete ? 'Serie completada' : isPreparing ? 'Prepárate' : state.phase === 'resting' ? 'Descansando' : state.phase === 'paused' ? 'Pausado' : state.phase === 'completed' ? 'Prueba terminada' : state.detectorState === 'tracking-lost' ? 'Fuera de cuadro' : 'Detectando' }}</p><span class="repetition-view-pill">Vista {{ view.cameraView === 'side' ? 'lateral' : 'frontal' }}</span></div>
+          <div v-if="state.phase === 'completed'" class="repetition-finish"><p>Rutina terminada. {{ state.rounds }} rondas completadas.</p><button class="primary wide" @click="restart">Repetir rutina</button></div>
+          <template v-else><div v-if="state.phase === 'active'" class="repetition-controls"><button class="secondary" @click="engine?.removeRepetition()">−1</button><button class="secondary" @click="engine?.addRepetition()">+1</button></div><div class="repetition-controls repetition-actions"><button class="secondary" @click="pauseOrResume">{{ state.phase === 'paused' ? 'Reanudar' : 'Pausar' }}</button><button class="danger" @click="stop">Terminar</button><button class="secondary" @click="restart">Reiniciar</button></div></template>
         </div>
       </section>
     </main></IonContent>
