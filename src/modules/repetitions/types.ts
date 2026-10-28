@@ -28,6 +28,8 @@ export type RepetitionState = {
   reps: number;
   round: number;
   rounds: number;
+  exerciseIndex: number;
+  exerciseCount: number;
   restRemainingSeconds: number;
   detectorState: DetectorState;
   startedAt?: number;
@@ -42,4 +44,5 @@ export type RepetitionEvent =
   | { type: "pose-status"; state: RepetitionState; detail?: string }
   | { type: "error"; state: RepetitionState; error: unknown };
 
-export type RoutineConfig = { exerciseId: ExerciseId; targetReps: number; restSeconds: number; rounds: number };
+export type RoutineExercise = { exerciseId: ExerciseId; targetReps: number };
+export type RoutineConfig = { exercises: RoutineExercise[]; restSeconds: number; rounds: number };
