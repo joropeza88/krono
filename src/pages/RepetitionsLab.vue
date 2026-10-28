@@ -105,7 +105,6 @@ onBeforeUnmount(leave);
   <IonPage>
     <IonHeader class="session-header" translucent><IonToolbar><IonButtons slot="start"><button class="lab-back" aria-label="Volver a Rutinas" @click="leaveAndReturn">‹ <span>Rutinas</span></button></IonButtons></IonToolbar></IonHeader>
     <IonContent class="app-content" fullscreen><main class="app repetitions-lab" :class="{ 'repetitions-live': isSession }">
-      <p class="eyebrow">Laboratorio · cámara local</p><h1 class="title">Repeticiones.</h1>
       <section v-if="!state || state.phase === 'idle' || state.phase === 'stopped' || state.phase === 'error'" class="hero repetition-prep">
         <h2>Rutina de prueba</h2><p>3 rondas: 5 sentadillas y 5 jumping jacks. Descansa 20 s al completar cada ejercicio.</p>
         <div class="repetition-plan"><span>1</span><p><strong>Sentadillas</strong><small>5 repeticiones · vista lateral</small></p><span>2</span><p><strong>Jumping jacks</strong><small>5 repeticiones · vista frontal</small></p></div>
