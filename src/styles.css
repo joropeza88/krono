@@ -1176,7 +1176,13 @@ ion-modal::part(content) {
 .repetition-session-top .eyebrow { margin: 0; color: #dff8be; }
 .repetition-session-top span { border: 1px solid rgba(246, 247, 242, .25); border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 700; }
 .repetition-focus { display: grid; justify-items: center; gap: 18px; margin: auto 0; padding: 20px 0; }
+.repetition-exercise-meta,
+.repetitions-live .repetition-round { margin: 0; color: #f6f7f2; font-size: clamp(25px, 7.6vw, 35px); font-weight: 800; letter-spacing: -.045em; text-shadow: 0 2px 14px #000; }
 .repetition-exercise-name { margin: 0; color: #f6f7f2; font-size: clamp(28px, 8vw, 38px); font-weight: 800; letter-spacing: -.055em; line-height: .95; text-shadow: 0 2px 14px #000; }
+.repetition-count-row { display: flex; align-items: center; justify-content: center; gap: clamp(8px, 3vw, 18px); padding: 2em 0; }
+.repetition-adjust { display: grid; width: clamp(54px, 15vw, 70px); height: clamp(54px, 15vw, 70px); place-items: center; border: 1px solid rgba(246, 247, 242, .3); border-radius: 50%; background: rgba(20, 26, 24, .7); color: #f6f7f2; font-size: 28px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.repetition-adjust ion-icon { font-size: 30px; }
+.repetition-adjust.hidden { visibility: hidden; }
 .repetitions-live .repetition-count { color: #f6f7f2; text-shadow: 0 3px 26px rgba(0, 0, 0, .62); }
 .repetitions-live .repetition-count span { color: #dce7d6; }
 .repetitions-live .repetition-round { margin: 0; color: #dce7d6; text-shadow: 0 2px 12px #000; }
@@ -1190,6 +1196,31 @@ ion-modal::part(content) {
 .repetition-session.resting .repetition-count, .repetition-session.resting .repetition-status { color: #83c9ff; }
 .repetition-session.preparing .repetition-shade { background: linear-gradient(180deg, rgba(38, 29, 7, .8) 0%, rgba(123, 93, 16, .18) 42%, rgba(36, 27, 6, .9) 100%); }
 .repetition-session.preparing .repetition-count, .repetition-session.preparing .repetition-status { color: #f5ce76; }
+.repetition-main-actions { display: flex; justify-content: center; gap: clamp(18px, 5vw, 24px); margin-top: auto; }
+.repetition-action { display: grid; width: clamp(78px, 22vw, 92px); height: clamp(78px, 22vw, 92px); place-items: center; border: 1px solid #405044; border-radius: 50%; background: rgba(36, 42, 42, .86); color: #f6f7f2; font-size: 35px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.repetition-action ion-icon { font-size: 35px; }
+.repetition-action.pause-action { border-color: rgba(182, 243, 108, .48); background: rgba(182, 243, 108, .88); color: #101315; }
+.repetition-action.stop-action { border-color: rgba(241, 125, 117, .45); background: rgba(71, 39, 42, .9); color: #ffbbb9; }
+.repetition-transition-screen,
+.repetition-complete-screen { position: absolute; z-index: 2; inset: 0; display: grid; place-content: center; justify-items: center; padding: 28px 20px calc(28px + env(safe-area-inset-bottom)); text-align: center; }
+.repetition-transition-screen { background: #12394f; color: #f6f7f2; }
+.repetition-transition-screen.preparing { background: #3b2e0e; }
+.repetition-transition-label { margin: 0 0 14px; color: #83c9ff; font-size: clamp(28px, 8vw, 38px); font-weight: 800; letter-spacing: -.055em; }
+.repetition-transition-screen.preparing .repetition-transition-label { color: #f5ce76; }
+.repetition-transition-screen h1 { margin: 0 0 30px; color: #f6f7f2; font-size: clamp(30px, 9vw, 42px); letter-spacing: -.055em; }
+.repetition-transition-ring { display: grid; width: min(78vw, 360px); aspect-ratio: 1; place-items: center; border-radius: 50%; padding: 15px; background: conic-gradient(#83c9ff var(--progress), #27556d 0); }
+.repetition-transition-screen.preparing .repetition-transition-ring { background: conic-gradient(#f5ce76 var(--progress), #58451a 0); }
+.repetition-transition-ring > div { display: flex; align-items: baseline; justify-content: center; width: 100%; height: 100%; border-radius: 50%; background: #102e40; }
+.repetition-transition-screen.preparing .repetition-transition-ring > div { background: #302508; }
+.repetition-transition-ring strong { font: 500 clamp(92px, 29vw, 138px) DM Mono, monospace; letter-spacing: -.12em; }
+.repetition-transition-ring span { margin-left: 12px; font-size: 28px; font-weight: 700; }
+.repetition-complete-screen { background: #101315; }
+.repetition-complete-screen .session-complete-panel { display: grid; width: min(100%, 340px); place-items: center; gap: 28px; }
+.repetition-complete-screen .session-complete-mark { display: grid; width: 120px; height: 120px; place-items: center; border: 1px solid rgba(182, 243, 108, .62); border-radius: 50%; background: rgba(182, 243, 108, .12); color: #b6f36c; box-shadow: 0 0 0 12px rgba(182, 243, 108, .05), 0 16px 48px rgba(182, 243, 108, .16); }
+.repetition-complete-screen .session-complete-mark ion-icon { font-size: 60px; }
+.repetition-complete-screen h1 { margin: 0; color: #f6f7f2; font-size: clamp(34px, 12vw, 46px); line-height: .96; letter-spacing: -.06em; }
+.repetition-complete-screen p { margin: -12px 0 0; color: #b8c5bd; font-size: 20px; }
+.repetition-complete-screen .session-complete-exit { width: 100%; background: #b6f36c; color: #101315; }
 .repetition-guidance { max-width: 310px; margin: 0; color: #f2f6ed; font-size: 13px; line-height: 1.4; text-shadow: 0 2px 12px #000; }
 .repetitions-live .repetition-controls { margin: 0 0 9px; }
 .repetitions-live .repetition-controls .secondary { background: rgba(30, 37, 35, .86); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
@@ -1408,6 +1439,59 @@ main.app.session > .session {
   background: rgba(182, 243, 108, 0.14);
   color: #caff8e;
 }
+.routine-session-page .session-exercise-meta,
+.routine-session-page .session-round-meta {
+  margin: 0;
+  color: #f6f7f2;
+  font-size: clamp(28px, 7.6vw, 35px);
+  font-weight: 800;
+  letter-spacing: -.045em;
+}
+.routine-session-page .session-round-meta { color: #f6f7f2; }
+.routine-session-page .timer-wrap,
+.simple-timer-session .timer-wrap { width: min(88vw, 420px); height: min(88vw, 420px); margin: clamp(24px, 5.5vh, 46px) auto; padding: 16px; }
+.routine-session-page .timer strong,
+.simple-timer-session .timer strong { font-size: clamp(76px, 22vw, 108px); }
+.routine-session-page .session-controls,
+.simple-timer-session .session-controls { display: flex; justify-content: center; gap: clamp(18px, 5vw, 24px); }
+.routine-session-page .session-icon-controls,
+.routine-session-page .session-start-controls,
+.simple-timer-session .session-icon-controls,
+.simple-timer-session .session-start-controls { margin-top: clamp(40px, 8vh, 76px); }
+.routine-session-page .session-icon-button,
+.simple-timer-session .session-icon-button {
+  display: grid;
+  width: clamp(78px, 22vw, 92px);
+  height: clamp(78px, 22vw, 92px);
+  place-items: center;
+  border: 1px solid #405044;
+  border-radius: 50%;
+  background: #242a2a;
+  color: #f6f7f2;
+  font-size: 31px;
+}
+.routine-session-page .session-icon-button ion-icon,
+.simple-timer-session .session-icon-button ion-icon { font-size: 35px; }
+.routine-session-page .start-session,
+.routine-session-page .pause-session,
+.simple-timer-session .start-session,
+.simple-timer-session .pause-session { border-color: rgba(182, 243, 108, .48); background: #b6f36c; color: #101315; }
+.routine-session-page .restart-session,
+.simple-timer-session .restart-session { color: #dce7d6; }
+.routine-session-page .stop-session,
+.simple-timer-session .stop-session { border-color: rgba(241, 125, 117, .45); background: #47272a; color: #ffbbb9; }
+.routine-session-page.complete .session-complete-panel { position: fixed; z-index: 1; inset: 0; display: grid; width: auto; place-content: center; justify-items: center; gap: 28px; margin: 0 20px; }
+.simple-timer-session.complete .session-complete-panel { position: fixed; z-index: 1; inset: 0; display: grid; width: auto; place-content: center; justify-items: center; gap: 28px; margin: 0 20px; }
+.routine-session-page .session-complete-mark,
+.simple-timer-session .session-complete-mark { display: grid; width: 120px; height: 120px; place-items: center; border: 1px solid rgba(182, 243, 108, .62); border-radius: 50%; background: rgba(182, 243, 108, .12); color: #b6f36c; box-shadow: 0 0 0 12px rgba(182, 243, 108, .05), 0 16px 48px rgba(182, 243, 108, .16); }
+.routine-session-page .session-complete-mark ion-icon,
+.simple-timer-session .session-complete-mark ion-icon { font-size: 60px; }
+.routine-session-page .session-complete-panel h1,
+.simple-timer-session .session-complete-panel h1 { margin: 0; color: #f6f7f2; font-size: clamp(34px, 12vw, 46px); line-height: .96; letter-spacing: -.06em; }
+.routine-session-page .session-complete-panel p,
+.simple-timer-session .session-complete-panel p { margin: -12px 0 0; color: #b8c5bd; font-size: 20px; }
+.routine-session-page .session-complete-exit,
+.simple-timer-session .session-complete-exit { width: 100%; background: #b6f36c; color: #101315; }
 .save-routine {
   border: 1px solid rgba(182, 243, 108, 0.26);
   background: rgba(182, 243, 108, 0.14);

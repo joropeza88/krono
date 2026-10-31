@@ -5,16 +5,20 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonPage,
+  IonTitle,
   IonToolbar,
+  onIonViewDidLeave,
   onIonViewWillLeave,
   useIonRouter,
 } from "@ionic/vue";
+import { checkmark, pause, play, refresh, stopCircle } from "ionicons/icons";
 import { useTimerSessionStore } from "../stores/useTimerSessionStore";
 
 const ionRouter = useIonRouter();
 const session = useTimerSessionStore();
-const { minutes, phase, remaining, paused, progress } = session;
+const { phase, remaining, paused, progress } = session;
 const formattedTime = computed(
   () =>
     `${Math.floor(remaining.value / 60)
@@ -31,17 +35,22 @@ async function startSession() {
 }
 
 onIonViewWillLeave(() => {
-  session.reset();
+  if (phase.value !== "complete") session.reset();
+});
+
+onIonViewDidLeave(() => {
+  if (phase.value === "complete") session.reset();
 });
 </script>
 
 <template>
-  <IonPage class="simple-timer-session">
+  <IonPage class="simple-timer-session" :class="phase">
     <IonHeader class="session-header" translucent>
       <IonToolbar>
         <IonButtons slot="start">
           <IonBackButton default-href="/cronometro" text="" />
         </IonButtons>
+        <IonTitle>Cronómetro</IonTitle>
       </IonToolbar>
     </IonHeader>
     <aside class="session-side-rail" aria-label="Controles de sesión">
@@ -51,55 +60,31 @@ onIonViewWillLeave(() => {
     <IonContent class="app-content session-content" fullscreen>
       <main class="app session">
         <section class="session">
-          <div class="session-timer-panel">
-            <div class="session-state">
-              {{
-                phase === "complete"
-                  ? "¡Completado!"
-                  : phase === "setup"
-                    ? "Comencemos"
-                    : paused
-                      ? "En pausa"
-                      : "Cronómetro"
-              }}
+          <template v-if="phase === 'complete'">
+            <div class="session-complete-panel">
+              <div class="session-complete-mark" aria-hidden="true"><IonIcon :icon="checkmark" /></div>
+              <h1>Cronómetro completado.</h1>
+              <p>Has completado tu tiempo.</p>
+              <button class="primary session-complete-exit" @click="finish">Volver al inicio</button>
             </div>
-            <h1 class="session-title">
-              {{ phase === "complete" ? "Tiempo terminado" : "Sigue a tu ritmo" }}
-            </h1>
-            <div class="timer-wrap" :style="{ '--progress': `${progress}%` }">
-              <div class="timer">
-                <strong>{{ formattedTime }}</strong
-                ><span v-if="phase === 'running'">{{ paused ? "en pausa" : "el tiempo corre" }}</span>
-                <span v-else>{{ "empieza en breve" }}</span>
+          </template>
+          <template v-else>
+            <div class="session-timer-panel">
+              <div class="timer-wrap" :style="{ '--progress': `${progress}%` }">
+                <div class="timer"><strong>{{ formattedTime }}</strong></div>
               </div>
             </div>
-          </div>
-          <div class="session-actions-panel">
-            <p v-if="phase === 'setup'" class="session-meta">
-              {{ minutes }} minuto{{ minutes === 1 ? "" : "s" }} preparado{{
-                minutes === 1 ? "" : "s"
-              }}.
-            </p>
-            <p v-else-if="phase === 'running'" class="session-meta">
-              {{
-                paused
-                  ? "Tu cronómetro está pausado."
-                  : `${minutes} minuto${minutes === 1 ? "" : "s"} configurado${minutes === 1 ? "" : "s"}.`
-              }}
-            </p>
-            <p v-else class="session-meta">Buen trabajo. Has terminado tu tiempo.</p>
-            <div v-if="phase === 'setup'" class="session-controls">
-              <button class="primary start-session" @click="startSession">Iniciar</button>
+            <div class="session-actions-panel">
+              <div v-if="phase === 'setup'" class="session-controls session-start-controls">
+                <button class="session-icon-button start-session" aria-label="Iniciar cronómetro" @click="startSession"><IonIcon :icon="play" /></button>
+              </div>
+              <div v-else class="session-controls session-icon-controls">
+                <button class="session-icon-button restart-session" aria-label="Reiniciar" @click="session.start"><IonIcon :icon="refresh" /></button>
+                <button class="session-icon-button pause-session" :aria-label="paused ? 'Reanudar' : 'Pausar'" @click="session.togglePause"><IonIcon :icon="paused ? play : pause" /></button>
+                <button class="session-icon-button stop-session" aria-label="Terminar" @click="finish"><IonIcon :icon="stopCircle" /></button>
+              </div>
             </div>
-            <div v-else-if="phase === 'running'" class="session-controls">
-              <button class="primary pause-session" @click="session.togglePause">
-                {{ paused ? "Reanudar" : "Pausar" }}
-              </button>
-              <button class="secondary" @click="session.start">Reiniciar</button>
-              <button class="danger" @click="finish">Terminar</button>
-            </div>
-            <button v-else class="primary wide" @click="finish">Nuevo cronómetro</button>
-          </div>
+          </template>
         </section>
       </main>
     </IonContent>

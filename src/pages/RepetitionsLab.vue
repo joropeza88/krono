@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref } from "vue";
-import { IonButtons, IonContent, IonHeader, IonPage, IonToolbar, useIonRouter } from "@ionic/vue";
+import { IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonToolbar, useIonRouter } from "@ionic/vue";
+import { add, checkmark, pause, play, refresh, remove, stopCircle } from "ionicons/icons";
 import { CameraManager, getExercise, PoseDetector, RepetitionEngine, type RepetitionState, type RoutineConfig } from "../modules/repetitions";
 import { playCue, unlockAudio } from "../audio";
 import { usePreferencesStore } from "../stores/usePreferencesStore";
@@ -21,6 +22,13 @@ let lastCountdownCue: number | undefined;
 const view = computed(() => getExercise(state.value?.exerciseId ?? TEST_ROUTINE.exercises[0].exerciseId));
 const isSession = computed(() => Boolean(state.value && !["idle", "stopped", "error"].includes(state.value.phase)));
 const isPreparing = computed(() => state.value?.phase === "resting" && state.value.restRemainingSeconds > 0 && state.value.restRemainingSeconds <= 3);
+const restProgress = computed(() => state.value ? Math.max(0, Math.min(100, ((TEST_ROUTINE.restSeconds - state.value.restRemainingSeconds) / TEST_ROUTINE.restSeconds) * 100)) : 0);
+const nextExercise = computed(() => {
+  const current = state.value;
+  if (!current) return getExercise(TEST_ROUTINE.exercises[0].exerciseId);
+  const nextIndex = current.exerciseIndex < current.exerciseCount - 1 ? current.exerciseIndex + 1 : 0;
+  return getExercise(TEST_ROUTINE.exercises[nextIndex].exerciseId);
+});
 const statusClass = computed(() => ({
   "is-resting": state.value?.phase === "resting" && !isPreparing.value,
   "is-preparing": isPreparing.value,
@@ -102,10 +110,22 @@ onBeforeUnmount(leave);
       <section v-else class="repetition-session" :class="{ resting: state.phase === 'resting', preparing: isPreparing }">
         <div class="repetition-video"><video ref="video" autoplay muted playsinline></video><canvas ref="overlay" aria-label="Esqueleto detectado" /></div>
         <div class="repetition-shade"></div>
-        <div class="repetition-hud">
-          <div class="repetition-focus"><p class="repetition-round">Ejercicio {{ state.exerciseIndex + 1 }} de {{ state.exerciseCount }} · Ronda {{ state.round }} de {{ state.rounds }}</p><p class="repetition-exercise-name">{{ view.name }}</p><div class="repetition-count"><strong>{{ state.phase === 'resting' ? state.restRemainingSeconds : state.reps }}</strong><span>{{ state.phase === 'resting' ? 's' : `/ ${state.targetReps}` }}</span></div><p class="repetition-status" :class="statusClass"><i></i>{{ state.isSetComplete ? 'Serie completada' : isPreparing ? 'Prepárate' : state.phase === 'resting' ? 'Descansando' : state.phase === 'paused' ? 'Pausado' : state.phase === 'completed' ? 'Prueba terminada' : state.detectorState === 'tracking-lost' ? 'Fuera de cuadro' : 'Detectando' }}</p><span class="repetition-view-pill">Vista {{ view.cameraView === 'side' ? 'lateral' : 'frontal' }}</span></div>
-          <div v-if="state.phase === 'completed'" class="repetition-finish"><p>Rutina terminada. {{ state.rounds }} rondas completadas.</p><button class="primary wide" @click="restart">Repetir rutina</button></div>
-          <template v-else><div v-if="state.phase === 'active'" class="repetition-controls"><button class="secondary" @click="engine?.removeRepetition()">−1</button><button class="secondary" @click="engine?.addRepetition()">+1</button></div><div class="repetition-controls repetition-actions"><button class="secondary" @click="pauseOrResume">{{ state.phase === 'paused' ? 'Reanudar' : 'Pausar' }}</button><button class="danger" @click="stop">Terminar</button><button class="secondary" @click="restart">Reiniciar</button></div></template>
+        <section v-if="state.phase === 'resting'" class="repetition-transition-screen" :class="{ preparing: isPreparing }">
+          <p class="repetition-transition-label">{{ isPreparing ? 'Prepárate' : 'Descanso' }}</p>
+          <h1 v-if="isPreparing">{{ nextExercise.name }}</h1>
+          <div class="repetition-transition-ring" :style="{ '--progress': `${restProgress}%` }"><div><strong>{{ state.restRemainingSeconds }}</strong><span>s</span></div></div>
+        </section>
+        <section v-else-if="state.phase === 'completed'" class="repetition-complete-screen">
+          <div class="session-complete-panel">
+            <div class="session-complete-mark" aria-hidden="true"><IonIcon :icon="checkmark" /></div>
+            <h1>Rutina completada.</h1>
+            <p>Has completado tu rutina.</p>
+            <button class="primary session-complete-exit" @click="leaveAndReturn">Volver al inicio</button>
+          </div>
+        </section>
+        <div v-else class="repetition-hud">
+          <div class="repetition-focus"><p class="repetition-exercise-meta">Ejercicio {{ state.exerciseIndex + 1 }} / {{ state.exerciseCount }}</p><!-- <p class="repetition-exercise-name">{{ view.name }}</p> --><div class="repetition-count-row"><button class="repetition-adjust" :class="{ hidden: state.phase !== 'active' }" :disabled="state.phase !== 'active'" aria-label="Restar una repetición" @click="engine?.removeRepetition()"><IonIcon :icon="remove" /></button><div class="repetition-count"><strong>{{ state.reps }}</strong><span>/ {{ state.targetReps }}</span></div><button class="repetition-adjust" :class="{ hidden: state.phase !== 'active' }" :disabled="state.phase !== 'active'" aria-label="Sumar una repetición" @click="engine?.addRepetition()"><IonIcon :icon="add" /></button></div><p v-if="state.isSetComplete || state.phase === 'paused'" class="repetition-status" :class="statusClass">{{ state.isSetComplete ? 'Serie completada' : 'Pausado' }}</p><p class="repetition-round">Ronda {{ state.round }} / {{ state.rounds }}</p><!-- <span class="repetition-view-pill">Vista {{ view.cameraView === 'side' ? 'lateral' : 'frontal' }}</span> --></div>
+          <div class="repetition-main-actions"><button class="repetition-action restart-action" aria-label="Reiniciar" @click="restart"><IonIcon :icon="refresh" /></button><button class="repetition-action pause-action" :aria-label="state.phase === 'paused' ? 'Reanudar' : 'Pausar'" @click="pauseOrResume"><IonIcon :icon="state.phase === 'paused' ? play : pause" /></button><button class="repetition-action stop-action" aria-label="Terminar" @click="stop"><IonIcon :icon="stopCircle" /></button></div>
         </div>
       </section>
     </main></IonContent>

@@ -5,12 +5,15 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonPage,
   IonTitle,
   IonToolbar,
+  onIonViewDidLeave,
   onIonViewWillLeave,
   useIonRouter,
 } from "@ionic/vue";
+import { checkmark, pause, play, refresh, stopCircle } from "ionicons/icons";
 import { useRoutineSessionStore } from "../stores/useRoutineSessionStore";
 
 const ionRouter = useIonRouter();
@@ -25,39 +28,6 @@ const {
   progress,
   isPreparingNextExercise,
 } = session;
-const label = computed(() =>
-  isPreparingNextExercise.value
-    ? "Prepárate"
-    : {
-        countdown: "Prepárate",
-        exercise: "A entrenar",
-        rest: "Recupera",
-        complete: "¡Completado!",
-        ready: "",
-      }[phase.value],
-);
-const title = computed(() =>
-  phase.value === "ready"
-    ? "Comencemos"
-    : isPreparingNextExercise.value
-      ? "Siguiente ejercicio"
-      : phase.value === "exercise"
-        ? `Ejercicio ${exercise.value}`
-        : phase.value === "rest"
-          ? "Descanso"
-          : phase.value === "countdown"
-            ? "Siguiente ejercicio"
-            : activeRoutine.value?.name || "",
-);
-const timerHint = computed(() =>
-  isPreparingNextExercise.value
-    ? "empieza en breve"
-    : phase.value === "exercise"
-      ? "mantén el ritmo"
-      : phase.value === "rest"
-        ? "respira"
-        : "empieza en breve",
-);
 const formattedTime = computed(
   () =>
     `${Math.floor(remaining.value / 60)
@@ -78,12 +48,16 @@ function exitSession() {
 }
 
 onIonViewWillLeave(() => {
-  session.finish();
+  if (phase.value !== "complete") session.finish();
+});
+
+onIonViewDidLeave(() => {
+  if (phase.value === "complete") session.finish();
 });
 </script>
 
 <template>
-  <IonPage :class="[phase, { 'preparing-next-exercise': isPreparingNextExercise }]">
+  <IonPage class="routine-session-page" :class="[phase, { 'preparing-next-exercise': isPreparingNextExercise }]">
     <IonHeader class="session-header" translucent>
       <IonToolbar>
         <IonButtons slot="start">
@@ -99,35 +73,35 @@ onIonViewWillLeave(() => {
     <IonContent class="app-content session-content" fullscreen>
       <main class="app session">
         <section class="session">
-          <div class="session-timer-panel">
-            <div class="session-state">{{ label }}</div>
-            <h1 class="session-title">{{ title }}</h1>
-            <div class="timer-wrap" :style="{ '--progress': `${progress}%` }">
-              <div class="timer">
-                <strong>{{ formattedTime }}</strong
-                ><span v-if="phase !== 'complete'">{{ timerHint }}</span>
+          <template v-if="phase === 'complete'">
+            <div class="session-complete-panel">
+              <div class="session-complete-mark" aria-hidden="true"><IonIcon :icon="checkmark" /></div>
+              <h1>Rutina completada.</h1>
+              <p>Has completado tu rutina.</p>
+              <button class="primary session-complete-exit" @click="exitSession">Volver al inicio</button>
+            </div>
+          </template>
+          <template v-else>
+            <div class="session-timer-panel">
+              <p v-if="activeRoutine" class="session-exercise-meta">Ejercicio {{ exercise }} / {{ activeRoutine.exerciseCount }}</p>
+              <div class="timer-wrap" :style="{ '--progress': `${progress}%` }">
+                <div class="timer">
+                  <strong>{{ formattedTime }}</strong>
+                </div>
+              </div>
+              <p v-if="activeRoutine" class="session-round-meta">Ronda {{ cycle }} / {{ activeRoutine.cycleCount }}</p>
+            </div>
+            <div class="session-actions-panel">
+              <div v-if="phase === 'ready'" class="session-controls session-start-controls">
+                <button class="session-icon-button start-session" aria-label="Iniciar rutina" @click="startSession"><IonIcon :icon="play" /></button>
+              </div>
+              <div v-else class="session-controls session-icon-controls">
+                <button class="session-icon-button restart-session" aria-label="Reiniciar" @click="restart"><IonIcon :icon="refresh" /></button>
+                <button class="session-icon-button pause-session" :aria-label="paused ? 'Reanudar' : 'Pausar'" @click="session.togglePause"><IonIcon :icon="paused ? play : pause" /></button>
+                <button class="session-icon-button stop-session" aria-label="Terminar" @click="exitSession"><IonIcon :icon="stopCircle" /></button>
               </div>
             </div>
-          </div>
-          <div class="session-actions-panel">
-            <p v-if="phase === 'ready'" class="session-meta">Todo listo. Tú marcas el comienzo.</p>
-            <p v-else-if="activeRoutine && phase !== 'complete'" class="session-meta">
-              Ejercicio {{ exercise }} de {{ activeRoutine.exerciseCount }} · Ronda {{ cycle }} de
-              {{ activeRoutine.cycleCount }}
-            </p>
-            <p v-else class="session-meta">Rutina finalizada. Gran trabajo.</p>
-            <div v-if="phase === 'ready'" class="session-controls">
-              <button class="primary start-session" @click="startSession">Iniciar</button>
-            </div>
-            <div v-else-if="phase !== 'complete'" class="session-controls">
-              <button class="primary pause-session" @click="session.togglePause">
-                {{ paused ? "Reanudar" : "Pausar" }}
-              </button>
-              <button class="secondary" @click="restart">Reiniciar</button>
-              <button class="danger" @click="exitSession">Terminar</button>
-            </div>
-            <button v-else class="primary wide" @click="exitSession">Volver al inicio</button>
-          </div>
+          </template>
         </section>
       </main>
     </IonContent>
